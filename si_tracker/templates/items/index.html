@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% for item in items %}
+        <h2><a href="{{ item.get_absolute_url }}">{{ item.title }}</a> {{ item.date_raised }} {{ item.type }}</h2>
+        <hr>
+    {% endfor %}
+{% endblock %}

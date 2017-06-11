@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{{ item.title }}</h1>
+    <hr>
+    <p>{{ item.type }} {{ item.date_raised }} {{ item.date_due }} {{ item.get_visible }} {{ item.get_status }} {{ item.assigned_to.username }}</p>
+    <hr>
+    <p>{{ item.description }}</p>
+    <hr>
+    <p>{{ item.actions_taken }}</p>
+
+    <a href="{{ issue.get_absolute_url }}">{{ issue.title }}</a>
+{% endblock %}
