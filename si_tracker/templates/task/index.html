@@ -2,8 +2,9 @@
 
 {% block content %}
     <h1>{{ item.title }}</h1>
+    <a href="{% url 'tracker:update_item' 'task' item.id %}">Edit</a>
     <hr>
-    <p>{{ item.type }} {{ item.date_raised }} {{ item.date_due }} {{ item.get_visible }} {{ item.get_status }} {{ item.assigned_to.username }}</p>
+    <p>{{ item.type }} {{ item.date_raised }} {{ item.date_due }} {{ item.visible }} {{ item.status }} {{ item.assigned_to.username }}</p>
     <hr>
     <p>{{ item.description }}</p>
     <hr>

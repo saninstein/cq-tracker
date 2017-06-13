@@ -12,3 +12,10 @@ class IssueForm(forms.ModelForm):
     #     super(IssueForm, self).__init__(*args, **kwargs)
     #     if self.instance:
     #         self.fields['related_tasks'].queryset = Task.objects.filter(raised_by=user)
+
+
+class TaskForm(forms.ModelForm):
+
+    class Meta:
+        model = Task
+        exclude = []

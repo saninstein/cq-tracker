@@ -1,7 +1,8 @@
 from django.shortcuts import render, render_to_response, get_object_or_404, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from si_tracker.models import *
 from si_tracker.forms import *
+from operator import itemgetter
 
 def user_context(req):
     return {
@@ -9,49 +10,73 @@ def user_context(req):
     }
 
 def general(req):
-    return HttpResponse("Hello")
+    return render(req, 'items/index.html')
 
 def items(req):
     args = dict()
-    args['items'] = Issue.objects.all().order_by('-id')
+    # items = list(Issue.objects.values('title', 'date_raised', 'id'))
+    # [x.update(type='Issue') for x in items]
+    # items += list(Task.objects.values('title', 'date_raised', 'id', 'type'))
+    # items = sorted(items, key=itemgetter('date_raised'))
+    # args['items'] = items
+    # print(args['items'])
     return render(req, 'items/index.html', args)
 
-def issue(req, item=None):
-    args = dict()
-    issue = Issue.objects.get(id=item)
-    args['item'] = issue
+def get_issue(args, issue):
     args['tasks'] = issue.task_set.all()
-    return render(req, 'issue/index.html', args)
 
-def task(req, item=None):
-    args = dict()
-    task = Task.objects.get(id=item)
-    args['item'] = task
+def get_task(args, task):
     args['issue'] = task.issue
-    return render(req, 'task/index.html', args)
 
-def issue_create_update(req, item=''):
+def item(req, type='', item=''):
     args = dict()
-    if item:
-        issue = get_object_or_404(Issue, id=item)
-        args['item'] = issue.id
+    if type.lower() == 'issue':
+        template = 'issue/index.html'
+        Item = Issue
+        get_item = get_issue
+    elif type.lower() == 'task' or type.lower() == 'idea':
+        template = 'task/index.html'
+        Item = Task
+        get_item = get_task
+
+    _item = get_object_or_404(Item, id=item)
+    args['item'] = _item
+    get_item(args, _item)
+    return render(req, template, args)
+
+
+def item_create_update(req, type='', item=''):
+    args = dict()
+    args['type'] = type
+    if type == 'issue':
+        Item = Issue
+        Form = IssueForm
+    elif type == 'task':
+        Item = Task
+        Form = TaskForm
     else:
-        issue = None
+        return Http404()
+
+    if item:
+        _item = get_object_or_404(Item, id=item)
+        args['item'] = _item.id
+    else:
+        _item = None
         args['item'] = None
 
     if req.method == 'POST':
-        form = IssueForm(req.POST, instance=issue)
+        form = Form(req.POST, instance=_item)
         if form.is_valid():
-            issue = form.save(commit=False)
+            _item = form.save(commit=False)
             form.save()
-            return redirect(issue.get_absolute_url())
+            return redirect(_item.get_absolute_url())
         else:
             args['form'] = form
 
     else:
-        args['form'] = IssueForm(instance=issue)
+        args['form'] = Form(instance=_item)
 
-    return render(req, 'issue_update_create/index.html', args)
+    return render(req, 'item_form/index.html', args)
 
 
 

@@ -7,17 +7,18 @@ class Item(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ['-date_raised', '-id']
 
     statuses = (
-        ('on', 'Open-New'),
-        ('ip', 'In Progress'),
-        ('cr', 'Closed-Resolved'),
-        ('cn', 'Closed-NotResolved')
+        ('Open-New', 'Open-New'),
+        ('In Progress', 'In Progress'),
+        ('Closed-Resolved', 'Closed-Resolved'),
+        ('Closed-NotResolved', 'Closed-NotResolved')
     )
 
     visibility = (
-        (0, 'Private'),
-        (1, 'Public')
+        ('Private', 'Private'),
+        ('Public', 'Public')
     )
 
     type = "Item"
@@ -25,18 +26,12 @@ class Item(models.Model):
     date_raised = models.DateField(auto_now_add=True, verbose_name="Date raised")
     date_due = models.DateField(blank=True, verbose_name="Date due")
     description = models.TextField(verbose_name="Description", max_length=5000)
-    status = models.CharField(max_length=10, choices=statuses, default=statuses[0], verbose_name="Status")
-    visible = models.IntegerField(default=visibility[1], choices=visibility, verbose_name="Visible")
+    status = models.CharField(max_length=20, choices=statuses, default=statuses[0], verbose_name="Status")
+    visible = models.CharField(max_length=10, default=visibility[1], choices=visibility, verbose_name="Visible")
     actions_taken = models.TextField(max_length=5000, verbose_name="Actions taken")
 
     def __str__(self):
         return self.title
-
-    def get_status(self):
-        return [x[1] for x in self.statuses if x[0] == self.status][0]
-
-    def get_visible(self):
-        return [x[1] for x in self.visibility if x[0] == self.visible][0]
 
 
 class Issue(Item):
@@ -46,15 +41,15 @@ class Issue(Item):
     # related_tasks = models.ManyToManyField(Task, related_name='issue', verbose_name="Related tasks")
 
     def get_absolute_url(self):
-        return reverse('tracker:issue', args=[self.id])
+        return reverse('tracker:item', args=['issue', self.id])
 
 
 class Task(Item):
-    types = (('T', 'Task'), ('I', 'Idea'))
+    types = (('Task', 'Task'), ('Task', 'Idea'))
     raised_by = models.ForeignKey(User, verbose_name="Raised by", related_name='Task')
     assigned_to = models.ForeignKey(User, verbose_name="Assigned to")
     type = models.CharField(max_length=10, choices=types, default=types[0], verbose_name="Type")
     issue = models.ForeignKey(Issue, verbose_name='Issue')
 
     def get_absolute_url(self):
-        return reverse('tracker:task', args=[self.id])
+        return reverse('tracker:item', args=['task', self.id])

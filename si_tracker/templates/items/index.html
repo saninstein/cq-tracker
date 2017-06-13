@@ -1,10 +1,28 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 
 {% block content %}
-    <a href="{% url 'tracker:new_issue' %}">New Issue</a>
-    <hr>
-    {% for item in items %}
-        <h3><a href="{{ item.get_absolute_url }}">{{ item.title }}</a> {{ item.date_raised }} {{ item.type }}</h3>
-        <hr>
-    {% endfor %}
+    <script src="{% static "js/vue.js" %}"></script>
+    <script src="{% static "js/axios.min.js" %}"></script>
+{#    <hr>#}
+{#    {% for item in items %}#}
+{#        <h3><a href="{% url 'tracker:item' item.type item.id %}">{{ item.title }}</a> {{ item.date_raised }} {{ item.type }}</h3>#}
+{#        <hr>#}
+{#    {% endfor %}#}
+    {% verbatim %}
+        <div id="app">{{ message }}</div>
+    {% endverbatim %}
+
+    <script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            message: "Hello, Vue"
+        },
+        created: function () {
+            axios.get("/items")
+        }
+    })
+</script>
 {% endblock %}
+
