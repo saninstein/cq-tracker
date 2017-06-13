@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <a href="{% url 'tracker:new_issue' %}">New Issue</a>
+    <hr>
     {% for item in items %}
-        <h2><a href="{{ item.get_absolute_url }}">{{ item.title }}</a> {{ item.date_raised }} {{ item.type }}</h2>
+        <h3><a href="{{ item.get_absolute_url }}">{{ item.title }}</a> {{ item.date_raised }} {{ item.type }}</h3>
         <hr>
     {% endfor %}
 {% endblock %}

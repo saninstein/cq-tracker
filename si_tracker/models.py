@@ -39,21 +39,22 @@ class Item(models.Model):
         return [x[1] for x in self.visibility if x[0] == self.visible][0]
 
 
+class Issue(Item):
+    type = "Issue"
+    raised_by = models.ForeignKey(User, verbose_name="Raised by", related_name='Issue')
+    assigned_to = models.ForeignKey(User, verbose_name="Assigned to")
+    # related_tasks = models.ManyToManyField(Task, related_name='issue', verbose_name="Related tasks")
+
+    def get_absolute_url(self):
+        return reverse('tracker:issue', args=[self.id])
+
+
 class Task(Item):
     types = (('T', 'Task'), ('I', 'Idea'))
     raised_by = models.ForeignKey(User, verbose_name="Raised by", related_name='Task')
     assigned_to = models.ForeignKey(User, verbose_name="Assigned to")
     type = models.CharField(max_length=10, choices=types, default=types[0], verbose_name="Type")
+    issue = models.ForeignKey(Issue, verbose_name='Issue')
 
     def get_absolute_url(self):
         return reverse('tracker:task', args=[self.id])
-
-
-class Issue(Item):
-    type = "Issue"
-    raised_by = models.ForeignKey(User, verbose_name="Raised by", related_name='Issue')
-    assigned_to = models.ForeignKey(User, verbose_name="Assigned to")
-    related_tasks = models.ManyToManyField(Task, related_name='issue', verbose_name="Related tasks")
-
-    def get_absolute_url(self):
-        return reverse('tracker:issue', args=[self.id])
