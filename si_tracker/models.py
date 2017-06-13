@@ -45,7 +45,7 @@ class Issue(Item):
 
 
 class Task(Item):
-    types = (('Task', 'Task'), ('Task', 'Idea'))
+    types = (('Task', 'Task'), ('Idea', 'Idea'))
     raised_by = models.ForeignKey(User, verbose_name="Raised by", related_name='Task')
     assigned_to = models.ForeignKey(User, verbose_name="Assigned to")
     type = models.CharField(max_length=10, choices=types, default=types[0], verbose_name="Type")

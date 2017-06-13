@@ -1,5 +1,5 @@
-from django.shortcuts import render, render_to_response, get_object_or_404, redirect
-from django.http import HttpResponse, Http404
+from django.shortcuts import render, render_to_response, get_object_or_404, redirect, reverse
+from django.http import HttpResponse, Http404, JsonResponse
 from si_tracker.models import *
 from si_tracker.forms import *
 from operator import itemgetter
@@ -13,14 +13,16 @@ def general(req):
     return render(req, 'items/index.html')
 
 def items(req):
-    args = dict()
-    # items = list(Issue.objects.values('title', 'date_raised', 'id'))
-    # [x.update(type='Issue') for x in items]
-    # items += list(Task.objects.values('title', 'date_raised', 'id', 'type'))
-    # items = sorted(items, key=itemgetter('date_raised'))
-    # args['items'] = items
-    # print(args['items'])
-    return render(req, 'items/index.html', args)
+    issues = Issue.objects.all()
+    issue_items = list(issues.values('id', 'title', 'date_raised', 'status', 'raised_by'))
+    [x.update(type='Issue', url=reverse('tracker:item', args=['issue', x.get('id')])) for x in issue_items]
+
+    tasks = Task.objects.all()
+    task_items = list(tasks.values('id', 'type', 'title', 'date_raised', 'status', 'raised_by'))
+    [x.update(url=reverse('tracker:item', args=['task', x.get('id')])) for x in task_items]
+
+    items = sorted(task_items + issue_items, key=itemgetter('date_raised'), reverse=True)
+    return JsonResponse({'results': items, 'user': req.user.id})
 
 def get_issue(args, issue):
     args['tasks'] = issue.task_set.all()

@@ -10,17 +10,86 @@
 {#        <hr>#}
 {#    {% endfor %}#}
     {% verbatim %}
-        <div id="app">{{ message }}</div>
+        <div id="app">
+            {{ user }}
+            <a href="#" @click="filterBy('type', 'Issue')">Filter Issue</a>
+            <a href="#" @click="filterBy('type', 'Task')">Filter Task</a>
+            <a href="#" @click="filterBy('type', 'Idea')">Filter Idea</a>
+            <a href="#" @click="sortBy('title')">Sort by Title</a>
+            <a href="#" @click="sortBy('date_raised')">Sort by Date</a>
+            <a href="#" v-show="controls.filter.self" @click="controls.filter.self = !controls.filter.self">My</a>
+            <a href="#" v-show="!controls.filter.self" @click="controls.filter.self = !controls.filter.self">All</a>
+
+            <ul>
+                <li v-for="item in items" v-if="!item.hide && (controls.filter.self || item.raised_by === user)">
+                    <a :href="item.url">{{ item.title }}</a> {{ item.date_raised }} {{ item.type }} {{ item.status }} {{ item.hide }}
+                </li>
+            </ul>
+        </div>
     {% endverbatim %}
 
     <script>
+
     var app = new Vue({
         el: '#app',
         data: {
-            message: "Hello, Vue"
+            items: "None",
+            user: null,
+            controls:{
+                sorts: {
+                    title: true,
+                    date: true
+                },
+                filter: {
+                    self: true
+                }
+            }
+        },
+        methods: {
+            onlyIssue: function () {
+                this.items = this.items.filter(function(p) {
+                    return p['type'] === 'Issue';
+                })
+            },
+
+            sortBy: function (param) {
+                var how;
+                if (param === 'title') {
+                    how = this.controls.sorts.title;
+                    this.controls.sorts.title = !how;
+                } else if (param === 'date_raised') {
+                    how = this.controls.sorts.date;
+                    this.controls.sorts.date = !how;
+                }
+                console.log(param + ':', how);
+                how = how ? (p1, p2) => { return p1 < p2 } : (p1, p2) => { return p1 > p2 };
+
+                this.items.sort(function (p1, p2) {
+                    return how(p1[param], p2[param])
+                });
+            },
+            
+            filterBy: function (field, param) {
+                for (var i = 0; i < this.items.length; i++)
+                    if(this.items[i][field] === param)
+                        this.items[i].hide = !this.items[i].hide;
+            }
         },
         created: function () {
+            var data;
             axios.get("/items")
+                .then(function (res) {
+                    console.log("Res: ", res.data['results']);
+                    app.$data.items = res.data['results'].map(function (p) {
+                        p.hide = false;
+                        return p;
+                    });
+
+                    app.$data.user = res.data['user'];
+                })
+                .catch(function (error) {
+                    console.log(error)
+                });
         }
     })
 </script>
