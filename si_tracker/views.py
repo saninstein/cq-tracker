@@ -75,6 +75,8 @@ def item_create_update(req, type='', item=''):
 
     if item:
         _item = get_object_or_404(Item, id=item)
+        if _item.status.startswith('Closed') and not req.user.is_staff:
+            return redirect(_item.get_absolute_url())
         args['item'] = _item.id
     else:
         _item = None
@@ -102,9 +104,19 @@ def item_create_update(req, type='', item=''):
 
         args['form'] = form
 
-
-
     return render(req, 'item_form/index.html', args)
+
+@user_passes_test(lambda user: user.is_staff, login_url=reverse_lazy('tracker:general'), redirect_field_name='')
+def delete_item(req, type='', item=''):
+    if type == 'issue':
+        Item = Issue
+    elif type == 'task':
+        Item = Task
+    else:
+        return Http404()
+    _item = get_object_or_404(Item, id=item)
+    _item.delete()
+    return redirect(reverse('tracker:general'))
 
 def login(req):
     args = dict()
