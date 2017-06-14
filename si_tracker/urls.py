@@ -7,4 +7,7 @@ urlpatterns = [
     url(r'^item/(?P<type>[\w\-]+)/(?P<item>\d+)', views.item, name='item'),
     url(r'^items/', views.items, name='items'),
     url(r'^$', views.general, name='general'),
+    url(r'^login/', views.login, name='login'),
+    url(r'^logout/', views.logout, name='logout'),
+
 ]

@@ -1,4 +1,6 @@
 from django.shortcuts import render, render_to_response, get_object_or_404, redirect, reverse
+from django.contrib.auth.forms import AuthenticationForm
+from  django.contrib import auth
 from django.http import HttpResponse, Http404, JsonResponse
 from si_tracker.models import *
 from si_tracker.forms import *
@@ -79,6 +81,30 @@ def item_create_update(req, type='', item=''):
         args['form'] = Form(instance=_item)
 
     return render(req, 'item_form/index.html', args)
+
+def login(req):
+    args = dict()
+    if req.method == 'POST':
+        form = AuthenticationForm(req, req.POST)
+        if form.is_valid():
+            auth.login(req, form.get_user())
+            return redirect(reverse('tracker:general'))
+        else:
+            args['form'] = form
+
+    else:
+        args['form'] = AuthenticationForm()
+
+    return render(req, 'login/index.html', args)
+
+def logout(req):
+    auth.logout(req)
+    return redirect(reverse('tracker:general'))
+
+
+
+
+
 
 
 

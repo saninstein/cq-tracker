@@ -9,6 +9,9 @@
 {#        <h3><a href="{% url 'tracker:item' item.type item.id %}">{{ item.title }}</a> {{ item.date_raised }} {{ item.type }}</h3>#}
 {#        <hr>#}
 {#    {% endfor %}#}
+    <a href="{% url "tracker:new_item" 'issue' %}">New issue</a>
+    <a href="{% url "tracker:new_item" 'task' %}">New task</a>
+    <hr>
     {% verbatim %}
         <div id="app">
             {{ user }}
@@ -62,10 +65,10 @@
                     this.controls.sorts.date = !how;
                 }
                 console.log(param + ':', how);
-                how = how ? (p1, p2) => { return p1 < p2 } : (p1, p2) => { return p1 > p2 };
+                how = how ? (p1, p2) => { return (p1 < p2) ? -1 : (p1 > p2) ? 1 : 0 } : (p1, p2) => { return (p1 > p2) ? -1 : (p1 < p2) ? 1 : 0 };
 
                 this.items.sort(function (p1, p2) {
-                    return how(p1[param], p2[param])
+                    return how(p1[param].toLowerCase(), p2[param].toLowerCase())
                 });
             },
             
