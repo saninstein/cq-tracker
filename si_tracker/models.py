@@ -28,7 +28,7 @@ class Item(models.Model):
     description = models.TextField(verbose_name="Description", max_length=5000)
     status = models.CharField(max_length=20, choices=statuses, default=statuses[0], verbose_name="Status")
     visible = models.CharField(max_length=10, default=visibility[1], choices=visibility, verbose_name="Visible")
-    actions_taken = models.TextField(max_length=5000, verbose_name="Actions taken")
+    actions_taken = models.TextField(max_length=5000, blank=True, default="", verbose_name="Actions taken")
 
     def __str__(self):
         return self.title
