@@ -1,6 +1,7 @@
 from django.shortcuts import render, render_to_response, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import auth
 from django.http import HttpResponse, Http404, JsonResponse
@@ -136,6 +137,32 @@ def login(req):
 def logout(req):
     auth.logout(req)
     return redirect(reverse('tracker:general'))
+
+@user_passes_test(lambda user: user.is_staff, login_url=reverse_lazy('tracker:general'), redirect_field_name='')
+def users(req):
+    users = User.objects.all().reverse()
+    return render(req, 'users/index.html', {'users': users})
+
+
+@user_passes_test(lambda user: user.is_staff, login_url=reverse_lazy('tracker:general'), redirect_field_name='')
+def create_user(req):
+    args = dict()
+    if req.method == 'POST':
+        form = UserCreateForm(req.POST)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('tracker:users'))
+        else:
+            args['form'] = form
+    else:
+        args['form'] = UserCreateForm()
+
+    return render(req, 'user_form/index.html', args)
+
+
+
+
+
 
 
 

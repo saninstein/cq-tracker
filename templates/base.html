@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1><a href="{% url 'tracker:general' %}">Simple Issues Tasker</a></h1>
-    {% if user.is_authenticated %}<h3>Hello, {{ user }} {% if user.is_staff %}<b>SU</b>{% endif %}<a href="{% url 'tracker:logout' %}">LogOut</a> </h3>{% else %}<a href="{% url 'tracker:login' %}">Login</a>{% endif %}
+    {% if user.is_authenticated %}<h3>Hello, {{ user }} {% if user.is_staff %}<b>SU</b> <a href="{% url 'tracker:users' %}">Users</a>{% endif %}<a href="{% url 'tracker:logout' %}">LogOut</a> </h3>{% else %}<a href="{% url 'tracker:login' %}">Login</a>{% endif %}
     {% block content %}{% endblock %}
 
 </body>

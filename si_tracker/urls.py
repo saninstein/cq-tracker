@@ -10,4 +10,6 @@ urlpatterns = [
     url(r'^login/', views.login, name='login'),
     url(r'^logout/', views.logout, name='logout'),
     url(r'^delete/(?P<type>[\w\-]+)/(?P<item>\d+)', views.delete_item, name='delete_item'),
+    url(r'^users/', views.users, name='users'),
+    url(r'^create_user/', views.create_user, name='create_user'),
 ]
