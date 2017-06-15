@@ -2,14 +2,16 @@
 
 {% block content %}
     <h1>{{ item.title }}</h1>
-    <a href="{% url 'tracker:update_item' 'task' item.id %}">Edit</a>
-    {% if user.is_staff %}<a href="{% url 'tracker:delete_item' 'task' item.id %}">Delete</a>{% endif %}
-    <hr>
-    <p>{{ item.type }} {{ item.date_raised }} {{ item.date_due }} {{ item.visible }} {{ item.status }} {{ item.assigned_to.username }}</p>
+    <h3>Issue: <a href="{{ issue.get_absolute_url }}">{{ issue.title }}</a></h3>
+    <h5>Raised by {{ item.raised_by.username }}, {{ item.date_raised }} {% if item.date_due %}Date due: {{ item.date_due }}{% endif %}</h5>
+    <h5><span class="label label-default">{{ item.visible }}</span> <span class="label label-info"> {{ item.status }}</span></h5>
     <hr>
     <p>{{ item.description }}</p>
+    {% if item.actions_taken %}
+        <hr>
+        <p>{{ item.actions_taken }}</p>
+    {% endif %}
     <hr>
-    <p>{{ item.actions_taken }}</p>
-
-    <a href="{{ issue.get_absolute_url }}">{{ issue.title }}</a>
+    <a class="btn btn-default" href="{% url 'tracker:update_item' 'task' item.id %}">Edit</a>
+    {% if user.is_staff %}<a class="btn btn-danger" href="{% url 'tracker:delete_item' 'task' item.id %}">Delete</a>{% endif %}
 {% endblock %}

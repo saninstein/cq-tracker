@@ -6,11 +6,22 @@
     <div class="panel panel-default">
     <div class="panel-heading text-center"><strong>LOGIN</strong></div>
         <div class="panel-body">
-            <form style="" class="form-inline text-center" action="{% url 'tracker:login' %}" method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <input class="btn btn-default" type="submit" value="Login">
-            </form>
+{#            <span class="col-xs-5 col-sm-5">#}
+                <form class="form-inline text-center" action="{% url 'tracker:login' %}" method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="form-group">
+                            {{ field.label_tag }} {{ field }}
+                        </div>
+                        {% for error in field.errors %}
+                            <div class="alert alert-danger" role="alert">{{ error }}</div>
+                        {% endfor %}
+                        <p class="help-block">{{ field.help_text }}</p>
+                    {% endfor %}
+                    <hr>
+                    <input class="btn btn-default" type="submit" value="Login">
+                </form>
+{#            </span>#}
         </div>
     </div>
 
