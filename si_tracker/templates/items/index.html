@@ -9,25 +9,49 @@
 {#        <h3><a href="{% url 'tracker:item' item.type item.id %}">{{ item.title }}</a> {{ item.date_raised }} {{ item.type }}</h3>#}
 {#        <hr>#}
 {#    {% endfor %}#}
-    <a href="{% url "tracker:new_item" 'issue' %}">New issue</a>
-    <a href="{% url "tracker:new_item" 'task' %}">New task</a>
+    <a class="btn btn-primary" href="{% url "tracker:new_item" 'issue' %}">New Issue <span v-if="controls.filter.issue" class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
+    <a class="btn btn-default" href="{% url "tracker:new_item" 'task' %}">New Task <span v-if="controls.filter.issue" class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
     <hr>
     {% verbatim %}
         <div id="app">
-            {{ user }}
-            <a href="#" @click="filterBy('type', 'Issue')">Filter Issue</a>
-            <a href="#" @click="filterBy('type', 'Task')">Filter Task</a>
-            <a href="#" @click="filterBy('type', 'Idea')">Filter Idea</a>
-            <a href="#" @click="sortBy('title')">Sort by Title</a>
-            <a href="#" @click="sortBy('date_raised')">Sort by Date</a>
-            <a href="#" v-show="controls.filter.self" @click="controls.filter.self = !controls.filter.self">My</a>
-            <a href="#" v-show="!controls.filter.self" @click="controls.filter.self = !controls.filter.self">All</a>
+            <div class="panel panel-default">
 
-            <ul>
-                <li v-for="item in items" v-if="!item.hide && (controls.filter.self || item.raised_by === user)">
-                    <a :href="item.url">{{ item.title }}</a> {{ item.date_raised }} {{ item.type }} {{ item.status }} {{ item.hide }}
-                </li>
-            </ul>
+                <div class="panel-body">
+                    <p>
+                        <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="controls.filter.self" @click="controls.filter.self = !controls.filter.self">All items</a>
+                        <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="!controls.filter.self" @click="controls.filter.self = !controls.filter.self">My items</a>
+                        <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Issue')">Issue <span v-if="controls.filter.issue" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
+                        <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Task')">Task <span v-if="controls.filter.task"class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
+                        <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Idea')">Idea <span v-if="controls.filter.idea" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
+                       <!-- <span class="btn-group" role="group">
+                            <button type="button" @click="filterBy('status', 'Open')" class="btn btn-default">Open <span v-if="controls.filter.status === 'Open'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                            <button type="button" @click="filterBy('status', 'Closed')" class="btn btn-default">Closed <span v-if="controls.filter.status === 'Closed'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                            <button type="button" @click="filterBy('status', 'All')" class="btn btn-default">All <span v-if="controls.filter.status === 'All'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                        </span>-->
+                    </p>
+                </div>
+                <div class="panel-footer">Filters</div>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th><a href="javascript:void(0)" @click="sortBy('title')">Title</a></th>
+                        <th><a href="javascript:void(0)" @click="sortBy('date_raised')">Date Raised</a></th>
+                        <th><a href="javascript:void(0)" @click="sortBy('date_due')">Date Due</a></th>
+                        <th><a href="javascript:void(0)" @click="sortBy('type')">Type</a></th>
+                        <th><a href="javascript:void(0)" @click="sortBy('status')">Status</a></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in items" v-if="!item.hide && (controls.filter.self || item.raised_by === user)">
+                        <td><a :href="item.url">{{ item.title }}</a></td>
+                        <td>{{ item.date_raised }}</td>
+                        <td>{{ item.date_due }}</td>
+                        <td>{{ item.type }}</td>
+                        <td>{{ item.status }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     {% endverbatim %}
 
@@ -41,10 +65,17 @@
             controls:{
                 sorts: {
                     title: true,
-                    date: true
+                    date1: true,
+                    date2: true,
+                    type: true,
+                    status: true,
                 },
                 filter: {
-                    self: true
+                    self: true,
+                    issue: true,
+                    idea:true,
+                    task: true,
+                    status: 'Open',
                 }
             }
         },
@@ -61,8 +92,19 @@
                     how = this.controls.sorts.title;
                     this.controls.sorts.title = !how;
                 } else if (param === 'date_raised') {
-                    how = this.controls.sorts.date;
-                    this.controls.sorts.date = !how;
+                    how = this.controls.sorts.date1;
+                    this.controls.sorts.date1 = !how;
+                } else if (param === 'date_due') {
+                    how = this.controls.sorts.date2;
+                    this.controls.sorts.date2 = !how;
+                } else if (param === 'type') {
+                    how = this.controls.sorts.type;
+                    this.controls.sorts.type = !how;
+                }  else if (param === 'status') {
+                    how = this.controls.sorts.status;
+                    this.controls.sorts.status = !how;
+                } else {
+                    return false;
                 }
                 console.log(param + ':', how);
                 how = how ? (p1, p2) => { return (p1 < p2) ? -1 : (p1 > p2) ? 1 : 0 } : (p1, p2) => { return (p1 > p2) ? -1 : (p1 < p2) ? 1 : 0 };
@@ -71,8 +113,47 @@
                     return how(p1[param].toLowerCase(), p2[param].toLowerCase())
                 });
             },
-            
+
+            filterType: function () {
+                var how = [
+                    this.controls.filter.task,
+                    this.controls.filter.issue,
+                    this.controls.filter.idea
+                ];
+
+                var type = [
+                    'Task',
+                    'Idea',
+                    'Issue'
+                ];
+                for(var j = 0; j < 3; j++)
+                    for (var i = 0; i < this.items.length; i++)
+                        if(this.items[i].type === type[j])
+                            this.items[i].hide = how[j];
+            },
+
             filterBy: function (field, param) {
+                if(param === 'Issue')
+                    this.controls.filter.issue = !this.controls.filter.issue;
+                else if(param === 'Task')
+                    this.controls.filter.task = !this.controls.filter.task;
+                else if(param === 'Idea')
+                    this.controls.filter.idea = !this.controls.filter.idea;
+
+                if(field === 'status') {
+                    this.filterType();
+                    this.controls.filter.status = param;
+                    for (var i = 0; i < this.items.length; i++)
+                        if(this.items[i][field].startsWith(param))
+                            this.items[i].hide = false;
+                        else if(param === 'All')
+                            this.items[i].hide = false;
+                        else
+                            this.items[i].hide = true;
+                    this.filterType();
+                    return false;
+                }
+
                 for (var i = 0; i < this.items.length; i++)
                     if(this.items[i][field] === param)
                         this.items[i].hide = !this.items[i].hide;

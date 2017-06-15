@@ -1,10 +1,17 @@
 {% extends 'base.html' %}
 
+{% load staticfiles %}
 {% block content %}
-    <form action="{% url 'tracker:login' %}" method="post">
-        {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Login">
-    </form>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <div class="panel panel-default">
+    <div class="panel-heading text-center"><strong>LOGIN</strong></div>
+        <div class="panel-body">
+            <form style="" class="form-inline text-center" action="{% url 'tracker:login' %}" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input class="btn btn-default" type="submit" value="Login">
+            </form>
+        </div>
+    </div>
 
 {% endblock %}

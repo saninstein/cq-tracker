@@ -1,10 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <a href="{% url 'tracker:create_user' %}">New user</a>
-    <ul>
-    {% for user in users %}
-        <li>{{ user.username }} {{ user.is_staff }} {{ user.email }} {{ user.first_name }}</li>
-    {% endfor %}
-    </ul>
+    <a class="btn btn-primary" href="{% url 'tracker:create_user' %}">New User <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
+
+    <table class="table">
+         <thead>
+             <tr>
+                 <th>id</th>
+                 <th>Username</th>
+                 <th>Is Admin</th>
+                 <th>Email</th>
+                 <th>Role name</th>
+             </tr>
+         </thead>
+         <tbody>
+            {% for item in users %}
+                 <tr>
+                     <th>{{ item.id }}</th>
+                     <td><a href="{% url 'tracker:update_user' item.id %}">{{ item.username }}</a></td>
+                     <td>{% if item.is_staff %}<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% else %}<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>{% endif %}</td>
+                     <td>{{ item.email }}</td>
+                     <td>{{ item.first_name }}</td>
+                 </tr>
+            {% endfor %}
+         </tbody>
+    </table>
 {% endblock %}

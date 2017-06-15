@@ -1,7 +1,7 @@
 from django.shortcuts import render, render_to_response, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import auth
 from django.http import HttpResponse, Http404, JsonResponse
@@ -28,11 +28,11 @@ def items(req):
         issues = Issue.objects.filter(Q(visible='Public') | Q(raised_by=req.user))
         tasks = Task.objects.filter(Q(visible='Public') | Q(raised_by=req.user))
 
-    issue_items = list(issues.values('id', 'title', 'date_raised', 'status', 'raised_by'))
+    issue_items = list(issues.values('id', 'title', 'date_raised', 'status', 'raised_by', 'date_due'))
     [x.update(type='Issue', url=reverse('tracker:item', args=['issue', x.get('id')])) for x in issue_items]
 
 
-    task_items = list(tasks.values('id', 'type', 'title', 'date_raised', 'status', 'raised_by'))
+    task_items = list(tasks.values('id', 'type', 'title', 'date_raised', 'status', 'raised_by', 'date_due'))
     [x.update(url=reverse('tracker:item', args=['task', x.get('id')])) for x in task_items]
 
     items = sorted(task_items + issue_items, key=itemgetter('date_raised'), reverse=True)
@@ -123,6 +123,7 @@ def login(req):
     args = dict()
     if req.method == 'POST':
         form = AuthenticationForm(req, req.POST)
+
         if form.is_valid():
             auth.login(req, form.get_user())
             return redirect(reverse('tracker:general'))
@@ -130,8 +131,10 @@ def login(req):
             args['form'] = form
 
     else:
-        args['form'] = AuthenticationForm()
-
+        form = AuthenticationForm()
+        args['form'] = form
+    form.fields['username'].widget.attrs['class'] = 'form-control'
+    form.fields['password'].widget.attrs['class'] = 'form-control'
     return render(req, 'login/index.html', args)
 
 def logout(req):
@@ -156,8 +159,53 @@ def create_user(req):
             args['form'] = form
     else:
         args['form'] = UserCreateForm()
-
+    args['type'] = 'create'
     return render(req, 'user_form/index.html', args)
+
+def update_user(req, user=''):
+    args = dict()
+    print(type(user))
+    if user:
+        _user = get_object_or_404(User, id=user)
+        if req.method == 'POST':
+            form = UpdateUserForm(req.POST, instance=_user)
+            if form.is_valid():
+                form.save()
+                return redirect(reverse('tracker:users'))
+            else:
+                args['form'] = form
+        else:
+            args['form'] = UpdateUserForm(instance=_user)
+        args['type'] = 'update'
+        args['user_id'] = user
+        return render(req, 'user_form/index.html', args)
+    return redirect(reverse('tracker:users'))
+
+def change_password(req, user=''):
+    args = dict()
+    if user:
+        _user = get_object_or_404(User, id=user)
+        if req.user.is_staff or req.user.id == _user.id:
+            if req.method == 'POST':
+                form = SetPasswordForm(_user, req.POST)
+                if form.is_valid():
+                    form.save()
+                    return redirect(reverse('tracker:general'))
+                else:
+                    args['form'] = form
+            else:
+                form = SetPasswordForm(_user)
+                args['form'] = form
+            args['user_id'] = user
+            form.fields['new_password1'].widget.attrs['class'] = 'form-control'
+            form.fields['new_password2'].widget.attrs['class'] = 'form-control'
+            return render(req, 'change_password/index.html', args)
+    return redirect(reverse('tracker:general'))
+
+
+
+
+
 
 
 

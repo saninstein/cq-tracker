@@ -1,20 +1,45 @@
 {% extends 'base.html' %}
-
+{% load staticfiles %}
 {% block content %}
-    <form action="
+{#    <form action="#}
+{#    {% if item %}#}
+{#        {% url 'tracker:update_item' type item %}#}
+{#    {% else %}#}
+{#        {% url 'tracker:new_item' type %}#}
+{#    {% endif %}#}
+{#    " method="post">#}
+{#    {% csrf_token %}#}
+{#        {% for field in form %}#}
+{#            {{ field.label }}#}
+{#            {{ field }}#}
+{#            {{ field.help_text }}#}
+{#            {{ field.errors }}#}
+{#            <hr>#}
+{#        {% endfor %}#}
+{#        <input type="submit" value="Save">#}
+{#    </form>#}
+
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <div class="panel panel-default my-panel-form">
+        <div class="panel-heading text-center">Update User</div>
+        <div class="panel-body">
+
+            <form style="" class="form-inline text-center" action="
     {% if item %}
         {% url 'tracker:update_item' type item %}
     {% else %}
         {% url 'tracker:new_item' type %}
     {% endif %}
     " method="post">
-    {% csrf_token %}
-        {% for field in form %}
-            {{ field.label }}
-            {{ field }}
-            {{ field.errors }}
-            <hr>
-        {% endfor %}
-        <input type="submit" value="Save">
-    </form>
+                {% csrf_token %}
+                {% for field in form %}
+                    {{ field.errors }}
+                    {{ field.label_tag }}<br>{{ field }}<br>
+                    {{ field.help_text }}
+                {% endfor %}
+            <br>
+                <input class="btn btn-default" type="submit" value="Save">
+            </form>
+        </div>
+    </div>
 {% endblock %}

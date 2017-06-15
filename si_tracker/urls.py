@@ -12,4 +12,7 @@ urlpatterns = [
     url(r'^delete/(?P<type>[\w\-]+)/(?P<item>\d+)', views.delete_item, name='delete_item'),
     url(r'^users/', views.users, name='users'),
     url(r'^create_user/', views.create_user, name='create_user'),
+    url(r'^update_user/(?P<user>\d+)', views.update_user, name='update_user'),
+    url(r'^change_password/(?P<user>\d+)', views.change_password, name='change_password'),
+
 ]

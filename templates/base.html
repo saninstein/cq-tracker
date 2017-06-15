@@ -4,11 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
 </head>
 <body>
-    <h1><a href="{% url 'tracker:general' %}">Simple Issues Tasker</a></h1>
-    {% if user.is_authenticated %}<h3>Hello, {{ user }} {% if user.is_staff %}<b>SU</b> <a href="{% url 'tracker:users' %}">Users</a>{% endif %}<a href="{% url 'tracker:logout' %}">LogOut</a> </h3>{% else %}<a href="{% url 'tracker:login' %}">Login</a>{% endif %}
-    {% block content %}{% endblock %}
+
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{% url 'tracker:general' %}">Simple Issues Tasker</a>
+                {% if user.is_staff %}<a class="btn btn-primary navbar-btn" href="{% url 'tracker:users' %}">Users</a>{% endif %}
+            </div>
+            <div class="collapse navbar-collapse">
+                {% if user.is_authenticated %}
+                    <p class="navbar-text navbar-right">Hello, <a href="{% url 'tracker:change_password' user.id %}">{{ user }}</a> <a class="btn-link" href="{% url 'tracker:logout' %}">Logout</a></p>
+                {% endif %}
+
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
 
 </body>
 </html>
