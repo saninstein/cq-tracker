@@ -15,6 +15,12 @@ def user_context(req):
         'user': req.user
     }
 
+def bootstraped_form(form):
+    for key in form.fields:
+        if key == 'is_staff':
+            continue
+        form.fields[key].widget.attrs['class'] = 'form-control'
+
 @user_passes_test(lambda user: user.is_authenticated, login_url=reverse_lazy('tracker:login'), redirect_field_name='')
 def general(req):
     return render(req, 'items/index.html')
@@ -28,15 +34,30 @@ def items(req):
         issues = Issue.objects.filter(Q(visible='Public') | Q(raised_by=req.user))
         tasks = Task.objects.filter(Q(visible='Public') | Q(raised_by=req.user))
 
-    issue_items = list(issues.values('id', 'title', 'date_raised', 'status', 'raised_by', 'date_due'))
+    issue_items = list(issues.values('id', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to'))
     [x.update(type='Issue', url=reverse('tracker:item', args=['issue', x.get('id')])) for x in issue_items]
 
 
-    task_items = list(tasks.values('id', 'type', 'title', 'date_raised', 'status', 'raised_by', 'date_due'))
+    task_items = list(tasks.values('id', 'type', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to'))
     [x.update(url=reverse('tracker:item', args=['task', x.get('id')])) for x in task_items]
 
     items = sorted(task_items + issue_items, key=itemgetter('date_raised'), reverse=True)
+
+    for item in items:
+        assigned_user = get_user(item.get('assigned_to', None))
+        raised_user = get_user(item.get('raised_by', None))
+        assigned_user = assigned_user.username if assigned_user else None
+        raised_user = raised_user.username if raised_user else None
+        item.update(assigned_user=assigned_user, raised_user=raised_user)
     return JsonResponse({'results': items, 'user': req.user.id})
+
+
+def get_user(id):
+    try:
+        return User.objects.get(id=id)
+    except User.DoesNotExist:
+        return False
+
 
 def get_issue(args, issue):
     args['tasks'] = issue.task_set.all()
@@ -57,9 +78,17 @@ def item(req, type='', item=''):
         get_item = get_task
 
     _item = get_object_or_404(Item, id=item)
-    args['item'] = _item
-    get_item(args, _item)
-    return render(req, template, args)
+
+    if _item.visible == 'Private':
+        if req.user.is_staff or req.user.id == _item.raised_by.id:
+            args['item'] = _item
+            get_item(args, _item)
+            return render(req, template, args)
+    else:
+        args['item'] = _item
+        get_item(args, _item)
+        return render(req, template, args)
+    return redirect(reverse('tracker:general'))
 
 @user_passes_test(lambda user: user.is_authenticated, login_url=reverse_lazy('tracker:login'), redirect_field_name='')
 def item_create_update(req, type='', item=''):
@@ -97,14 +126,14 @@ def item_create_update(req, type='', item=''):
         form = Form(instance=_item, initial=inital)
 
         if not req.user.is_staff:
-            if req.user.id != _item.raised_by.id:
-                print("Yes")
-                form.fields['visible'].disabled = True
+            if _item is not None:
+                if req.user.id != _item.raised_by.id:
+                    form.fields['visible'].disabled = True
             if isinstance(form, TaskForm):
                 form.fields['issue'].queryset = Issue.objects.filter(Q(visible='Public') | Q(raised_by=req.user.id))
 
         args['form'] = form
-
+    bootstraped_form(args.get('form'))
     return render(req, 'item_form/index.html', args)
 
 @user_passes_test(lambda user: user.is_staff, login_url=reverse_lazy('tracker:general'), redirect_field_name='')
@@ -133,10 +162,10 @@ def login(req):
     else:
         form = AuthenticationForm()
         args['form'] = form
-    form.fields['username'].widget.attrs['class'] = 'form-control'
-    form.fields['password'].widget.attrs['class'] = 'form-control'
+    bootstraped_form(form)
     return render(req, 'login/index.html', args)
 
+@user_passes_test(lambda user: user.is_authenticated, login_url=reverse_lazy('tracker:login'), redirect_field_name='')
 def logout(req):
     auth.logout(req)
     return redirect(reverse('tracker:general'))
@@ -158,10 +187,13 @@ def create_user(req):
         else:
             args['form'] = form
     else:
-        args['form'] = UserCreateForm()
+        form = UserCreateForm()
+        args['form'] = form
     args['type'] = 'create'
+    bootstraped_form(form)
     return render(req, 'user_form/index.html', args)
 
+@user_passes_test(lambda user: user.is_staff, login_url=reverse_lazy('tracker:general'), redirect_field_name='')
 def update_user(req, user=''):
     args = dict()
     print(type(user))
@@ -175,7 +207,10 @@ def update_user(req, user=''):
             else:
                 args['form'] = form
         else:
-            args['form'] = UpdateUserForm(instance=_user)
+            form = UpdateUserForm(instance=_user)
+            args['form'] = form
+
+        bootstraped_form(form)
         args['type'] = 'update'
         args['user_id'] = user
         return render(req, 'user_form/index.html', args)
@@ -197,8 +232,7 @@ def change_password(req, user=''):
                 form = SetPasswordForm(_user)
                 args['form'] = form
             args['user_id'] = user
-            form.fields['new_password1'].widget.attrs['class'] = 'form-control'
-            form.fields['new_password2'].widget.attrs['class'] = 'form-control'
+            bootstraped_form(form)
             return render(req, 'change_password/index.html', args)
     return redirect(reverse('tracker:general'))
 

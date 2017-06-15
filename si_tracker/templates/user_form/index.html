@@ -10,24 +10,32 @@
 
 
 
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+
     <div class="panel panel-default my-panel-form">
         <div class="panel-heading text-center">Update User</div>
         <div class="panel-body">
 
-            <form style="" class="form-inline text-center" action="{% if type == 'create' %}{% url 'tracker:create_user' %}{% else %}{% url 'tracker:update_user' user_id %}{% endif %}" method="post">
+            <form style="" action="{% if type == 'create' %}{% url 'tracker:create_user' %}{% else %}{% url 'tracker:update_user' user_id %}{% endif %}" method="post">
                 {% csrf_token %}
                 {% for field in form %}
                     {% if field.name != 'password' %}
-                        {{ field.errors }}
-                        {{ field.label_tag }}<br>{{ field }}<br>
-                        {{ field.help_text }}
+
+                        <div class="form-group">
+                            {{ field.label_tag }} {{ field }}
+                        </div>
+                        {% for error in field.errors %}
+                            <div class="alert alert-danger" role="alert">{{ error }}</div>
+                        {% endfor %}
+                        {% if field.name != 'is_staff' %}
+                            <p class="help-block">{{ field.help_text | striptags | safe }}</p>
+                        {% endif %}
                     {% endif %}
-
-
                 {% endfor %}
+
+
+
             <br>
-                <input class="btn btn-default" type="submit" value="Save">
+                <input class="btn btn-primary" type="submit" value="Save">
             </form>
         </div>
     </div>

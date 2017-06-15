@@ -3,16 +3,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Simple Issue Tracker</title>
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 <body>
 
-    <nav class="navbar navbar-default">
+    <nav class="navbar navbar-inverse">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a class="navbar-brand" href="{% url 'tracker:general' %}">Simple Issues Tasker</a>
-                {% if user.is_staff %}<a class="btn btn-primary navbar-btn" href="{% url 'tracker:users' %}">Users</a>{% endif %}
+                <a class="navbar-brand" href="{% url 'tracker:general' %}">Simple Issue Tracker</a>
+                <span class="dropdown">
+                    <a class="btn btn-primary navbar-btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Item <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url "tracker:new_item" 'issue' %}">New Issue</a></li>
+                        <li><a href="{% url "tracker:new_item" 'task' %}">New Task</a></li>
+                    </ul>
+                </span>
+                {% if user.is_staff %}<a class="btn btn-success navbar-btn" href="{% url 'tracker:users' %}">Users</a>{% endif %}
             </div>
             <div class="collapse navbar-collapse">
                 {% if user.is_authenticated %}
@@ -24,7 +34,12 @@
         </div>
     </nav>
 
+
+
+
     <div class="container">
+
+
         {% block content %}{% endblock %}
     </div>
 

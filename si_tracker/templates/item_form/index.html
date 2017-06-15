@@ -21,10 +21,10 @@
 
     <link rel="stylesheet" href="{% static 'style.css' %}">
     <div class="panel panel-default my-panel-form">
-        <div class="panel-heading text-center">Update User</div>
+        <div class="panel-heading text-center">{% if item %}Update{% else %}New{% endif %} {{ type }}</div>
         <div class="panel-body">
 
-            <form style="" class="form-inline text-center" action="
+            <form style="" class="" action="
     {% if item %}
         {% url 'tracker:update_item' type item %}
     {% else %}
@@ -33,12 +33,16 @@
     " method="post">
                 {% csrf_token %}
                 {% for field in form %}
-                    {{ field.errors }}
-                    {{ field.label_tag }}<br>{{ field }}<br>
-                    {{ field.help_text }}
+                    <div class="form-group">
+                        {{ field.label_tag }} {{ field }}
+                    </div>
+                    {% for error in field.errors %}
+                        <div class="alert alert-danger" role="alert">{{ error }}</div>
+                    {% endfor %}
+                    <p class="help-block">{{ field.help_text }}</p>
                 {% endfor %}
             <br>
-                <input class="btn btn-default" type="submit" value="Save">
+                <input class="btn btn-primary" type="submit" value="Save">
             </form>
         </div>
     </div>

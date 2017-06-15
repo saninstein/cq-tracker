@@ -9,9 +9,7 @@
 {#        <h3><a href="{% url 'tracker:item' item.type item.id %}">{{ item.title }}</a> {{ item.date_raised }} {{ item.type }}</h3>#}
 {#        <hr>#}
 {#    {% endfor %}#}
-    <a class="btn btn-primary" href="{% url "tracker:new_item" 'issue' %}">New Issue <span v-if="controls.filter.issue" class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
-    <a class="btn btn-default" href="{% url "tracker:new_item" 'task' %}">New Task <span v-if="controls.filter.issue" class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
-    <hr>
+
     {% verbatim %}
         <div id="app">
             <div class="panel panel-default">
@@ -40,6 +38,8 @@
                         <th><a href="javascript:void(0)" @click="sortBy('date_due')">Date Due</a></th>
                         <th><a href="javascript:void(0)" @click="sortBy('type')">Type</a></th>
                         <th><a href="javascript:void(0)" @click="sortBy('status')">Status</a></th>
+                        <th><a href="javascript:void(0)" @click="sortBy('raised_user')">Raised by</a></th>
+                        <th><a href="javascript:void(0)" @click="sortBy('assigned_user')">Assigned to</a></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -49,6 +49,8 @@
                         <td>{{ item.date_due }}</td>
                         <td>{{ item.type }}</td>
                         <td>{{ item.status }}</td>
+                        <td>{{ item.raised_user }}</td>
+                        <td>{{ item.assigned_user }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -69,9 +71,11 @@
                     date2: true,
                     type: true,
                     status: true,
+                    user1: true,
+                    user2: true,
                 },
                 filter: {
-                    self: true,
+                    self: false,
                     issue: true,
                     idea:true,
                     task: true,
@@ -103,6 +107,12 @@
                 }  else if (param === 'status') {
                     how = this.controls.sorts.status;
                     this.controls.sorts.status = !how;
+                } else if (param === 'raised_user') {
+                    how = this.controls.sorts.user1;
+                    this.controls.sorts.user1 = !how;
+                } else if (param === 'assigned_user') {
+                    how = this.controls.sorts.user2;
+                    this.controls.sorts.user2 = !how;
                 } else {
                     return false;
                 }

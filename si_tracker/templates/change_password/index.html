@@ -7,15 +7,19 @@
         <div class="panel-heading text-center">Change Password</div>
         <div class="panel-body">
 
-            <form style="" class="form-inline text-center" action="{% url 'tracker:change_password' user_id %}" method="post">
+            <form style="" class="" action="{% url 'tracker:change_password' user_id %}" method="post">
                 {% csrf_token %}
-                {% for field in form %}
-                        {{ field.errors }}
-                        {{ field.label_tag }}<br>{{ field }}<br><br>
+                    {% for field in form %}
+                        <div class="form-group">
+                            {{ field.label_tag }} {{ field }}
+                        </div>
+                        {% for error in field.errors %}
+                            <div class="alert alert-danger" role="alert">{{ error }}</div>
+                        {% endfor %}
 
-                {% endfor %}
-            <br>
-                <input class="btn btn-default" type="submit" value="Save">
+                    {% endfor %}
+
+                <input class="btn btn-primary" type="submit" value="Save">
             </form>
         </div>
     </div>
