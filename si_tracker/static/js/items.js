@@ -116,6 +116,8 @@ var app = new Vue({
                     console.log("Res: ", res.data['results']);
                     app.$data.items = res.data['results'].map(function (p) {
                         p.hide = false;
+                        p.date_raised = dateConvert(p.date_raised);
+                        p.date_due = dateConvert(p.date_due);
                         return p;
                     });
 
