@@ -21,11 +21,11 @@
                         <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Issue')">Issue <span v-if="controls.filter.issue" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
                         <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Task')">Task <span v-if="controls.filter.task"class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
                         <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Idea')">Idea <span v-if="controls.filter.idea" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
-                       <!-- <span class="btn-group" role="group">
-                            <button type="button" @click="filterBy('status', 'Open')" class="btn btn-default">Open <span v-if="controls.filter.status === 'Open'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
-                            <button type="button" @click="filterBy('status', 'Closed')" class="btn btn-default">Closed <span v-if="controls.filter.status === 'Closed'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
-                            <button type="button" @click="filterBy('status', 'All')" class="btn btn-default">All <span v-if="controls.filter.status === 'All'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
-                        </span>-->
+                       <span class="btn-group" role="group">
+                            <button type="button" @click="controls.filter.status='Open'" class="btn btn-default">Open <span v-if="controls.filter.status === 'Open'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                            <button type="button" @click="controls.filter.status='Closed'" class="btn btn-default">Closed <span v-if="controls.filter.status === 'Closed'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                            <button type="button" @click="controls.filter.status='All'" class="btn btn-default">All <span v-if="controls.filter.status === 'All'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                        </span>
                     </p>
                 </div>
                 <div class="panel-footer">Filters</div>
@@ -43,7 +43,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="item in items" v-if="!item.hide && (controls.filter.self || item.raised_by === user)">
+                    <tr v-for="item in items" v-if="!item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status)">
                         <td><a :href="item.url">{{ item.title }}</a></td>
                         <td>{{ item.date_raised }}</td>
                         <td>{{ item.date_due }}</td>
@@ -124,22 +124,29 @@
                 });
             },
 
-            filterType: function () {
-                var how = [
-                    this.controls.filter.task,
-                    this.controls.filter.issue,
-                    this.controls.filter.idea
-                ];
+            filterStatus: function (status) {
+                /* if (status != 'All') {
+                    this.controls.filter.issue = true;
+                    this.controls.filter.task = true;
+                    this.controls.filter.idea = true;
+                }
 
-                var type = [
-                    'Task',
-                    'Idea',
-                    'Issue'
-                ];
-                for(var j = 0; j < 3; j++)
-                    for (var i = 0; i < this.items.length; i++)
-                        if(this.items[i].type === type[j])
-                            this.items[i].hide = how[j];
+                this.controls.filter.status = status;
+                for (var i = 0; i < this.items.length; i++)
+                    if(this.items[i]['status'].startsWith(status))
+                        this.items[i].hide = false;
+                    else if(status === 'All')
+                        this.items[i].hide = false;
+                    else
+                        this.items[i].hide = true;
+                return false;*/
+                if(this.controls.filter.status === 'All') {
+                    return true;
+                } else if(status.startsWith(this.controls.filter.status)) {
+                    return true
+                }
+                return false;
+
             },
 
             filterBy: function (field, param) {
@@ -150,20 +157,8 @@
                 else if(param === 'Idea')
                     this.controls.filter.idea = !this.controls.filter.idea;
 
-                if(field === 'status') {
-                    this.filterType();
-                    this.controls.filter.status = param;
-                    for (var i = 0; i < this.items.length; i++)
-                        if(this.items[i][field].startsWith(param))
-                            this.items[i].hide = false;
-                        else if(param === 'All')
-                            this.items[i].hide = false;
-                        else
-                            this.items[i].hide = true;
-                    this.filterType();
-                    return false;
-                }
 
+                this.filterStatus('All');
                 for (var i = 0; i < this.items.length; i++)
                     if(this.items[i][field] === param)
                         this.items[i].hide = !this.items[i].hide;
