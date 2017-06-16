@@ -37,6 +37,7 @@ def items(req):
     issue_items = list(issues.values('id', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to'))
     [x.update(type='Issue', url=reverse('tracker:item', args=['issue', x.get('id')])) for x in issue_items]
 
+    print(type(issue_items[0]['date_raised']))
 
     task_items = list(tasks.values('id', 'type', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to'))
     [x.update(url=reverse('tracker:item', args=['task', x.get('id')])) for x in task_items]
