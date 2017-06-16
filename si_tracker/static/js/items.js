@@ -55,6 +55,9 @@ var app = new Vue({
                 } else if (param === 'assigned_user') {
                     how = this.controls.sorts.user2;
                     this.controls.sorts.user2 = !how;
+                } else if (param === 'location') {
+                    how = this.controls.sorts.localtion;
+                    this.controls.sorts.localtion = !how;
                 } else {
                     return false;
                 }

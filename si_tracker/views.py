@@ -34,12 +34,11 @@ def items(req):
         issues = Issue.objects.filter(Q(visible='Public') | Q(raised_by=req.user))
         tasks = Task.objects.filter(Q(visible='Public') | Q(raised_by=req.user))
 
-    issue_items = list(issues.values('id', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to'))
+    issue_items = list(issues.values('id', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location'))
     [x.update(type='Issue', url=reverse('tracker:item', args=['issue', x.get('id')])) for x in issue_items]
 
-    print(type(issue_items[0]['date_raised']))
 
-    task_items = list(tasks.values('id', 'type', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to'))
+    task_items = list(tasks.values('id', 'type', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location'))
     [x.update(url=reverse('tracker:item', args=['task', x.get('id')])) for x in task_items]
 
     items = sorted(task_items + issue_items, key=itemgetter('date_raised'), reverse=True)
@@ -65,6 +64,7 @@ def get_issue(args, issue):
 
 def get_task(args, task):
     args['issue'] = task.issue
+
 
 @user_passes_test(lambda user: user.is_authenticated, login_url=reverse_lazy('tracker:login'), redirect_field_name='')
 def item(req, type='', item=''):
@@ -197,7 +197,6 @@ def create_user(req):
 @user_passes_test(lambda user: user.is_staff, login_url=reverse_lazy('tracker:general'), redirect_field_name='')
 def update_user(req, user=''):
     args = dict()
-    print(type(user))
     if user:
         _user = get_object_or_404(User, id=user)
         if req.method == 'POST':

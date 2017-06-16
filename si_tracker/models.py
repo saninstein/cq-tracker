@@ -21,6 +21,14 @@ class Item(models.Model):
         ('Public', 'Public')
     )
 
+    locations = (
+        ('Asset', 'Asset'), ('Delivery', 'Delivery'), ('Hunter', 'Hunter'), ('Valley', 'Valley'),
+        ('Central', 'Central'), ('North', 'North'), ('West', 'West'), ('Port', 'Port'), ('Waratah', 'Waratah'),
+        ('Maitland', 'Maitland'), ('Muswellbrook', 'Muswellbrook'), ('Scone', 'Scone'), ('Gunnedah', 'Gunnedah'),
+        ('Narrabri', 'Narrabri'), ('Tamworth', 'Tamworth'), ('Dubbo', 'Dubbo'), ('Binnaway', 'Binnaway')
+    )
+
+
     type = "Item"
     title = models.CharField(max_length=150, verbose_name="Title")
     date_raised = models.DateField(auto_now_add=True, verbose_name="Date raised")
@@ -29,6 +37,7 @@ class Item(models.Model):
     status = models.CharField(max_length=20, choices=statuses, default=statuses[0], verbose_name="Status")
     visible = models.CharField(max_length=10, default=visibility[1], choices=visibility, verbose_name="Visible")
     actions_taken = models.TextField(max_length=5000, blank=True, default="", verbose_name="Actions taken")
+    location = models.CharField(max_length=20, blank=True, choices=locations, verbose_name="Location")
 
     def __str__(self):
         return self.title

@@ -41,6 +41,7 @@
                         <th><a href="javascript:void(0)" @click="sortBy('status')">Status</a></th>
                         <th><a href="javascript:void(0)" @click="sortBy('raised_user')">Raised by</a></th>
                         <th><a href="javascript:void(0)" @click="sortBy('assigned_user')">Assigned to</a></th>
+                        <th><a href="javascript:void(0)" @click="sortBy('location')">Location</a></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,6 +53,7 @@
                         <td>{{ item.status }}</td>
                         <td>{{ item.raised_user }}</td>
                         <td>{{ item.assigned_user }}</td>
+                        <td>{{ item.location }}</td>
                     </tr>
                 </tbody>
             </table>
