@@ -10,10 +10,9 @@ class IssueForm(forms.ModelForm):
         model = Issue
         exclude = []
 
-    # def __init__(self, user, *args, **kwargs):
-    #     super(IssueForm, self).__init__(*args, **kwargs)
-    #     if self.instance:
-    #         self.fields['assigned_to'].queryset = Task.objects.filter(raised_by=user)
+    def __init__(self, *args, **kwargs):
+        super(IssueForm, self).__init__(*args, **kwargs)
+        self.fields['date_due'].input_formats = ['%d/%m/%Y', '%Y-%m-%d']
 
 
 class TaskForm(forms.ModelForm):
@@ -21,6 +20,10 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         exclude = []
+
+    def __init__(self, *args, **kwargs):
+        super(TaskForm, self).__init__(*args, **kwargs)
+        self.fields['date_due'].input_formats = ['%d/%m/%Y', '%Y-%m-%d']
 
 
 class UserCreateForm(UserCreationForm):

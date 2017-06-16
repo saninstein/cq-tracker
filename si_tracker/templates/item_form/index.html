@@ -1,25 +1,14 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block content %}
-{#    <form action="#}
-{#    {% if item %}#}
-{#        {% url 'tracker:update_item' type item %}#}
-{#    {% else %}#}
-{#        {% url 'tracker:new_item' type %}#}
-{#    {% endif %}#}
-{#    " method="post">#}
-{#    {% csrf_token %}#}
-{#        {% for field in form %}#}
-{#            {{ field.label }}#}
-{#            {{ field }}#}
-{#            {{ field.help_text }}#}
-{#            {{ field.errors }}#}
-{#            <hr>#}
-{#        {% endfor %}#}
-{#        <input type="submit" value="Save">#}
-{#    </form>#}
-
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'datetimepicker/css/bootstrap-datetimepicker.min.css' %}">
+    <script src="{% static 'js/moment.min.js' %}"></script>
+    <script src="{% static 'js/transition.js' %}"></script>
+    <script src="{% static 'js/collapse.js' %}"></script>
+    <script src="{% static 'datetimepicker/js/bootstrap-datetimepicker.min.js' %}"></script>
+    <script src="{% static 'js/datepick.js' %}"></script>
+
     <div class="panel panel-default my-panel-form">
         <div class="panel-heading text-center">{% if item %}Update{% else %}New{% endif %} {{ type }}</div>
         <div class="panel-body">
@@ -34,7 +23,17 @@
                 {% csrf_token %}
                 {% for field in form %}
                     <div class="form-group">
-                        {{ field.label_tag }} {{ field }}
+                        {% if field.name == 'date_due' %}
+                            {{ field.label_tag }}
+                            <div class='input-group date' id='datetimepicker1'>
+                                {{ field }}
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        {% else %}
+                            {{ field.label_tag }} {{ field }}
+                        {% endif %}
                     </div>
                     {% for error in field.errors %}
                         <div class="alert alert-danger" role="alert">{{ error }}</div>
@@ -46,4 +45,5 @@
             </form>
         </div>
     </div>
+
 {% endblock %}
