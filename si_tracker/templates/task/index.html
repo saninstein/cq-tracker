@@ -4,6 +4,7 @@
     <h1>{{ item.title }}</h1>
     <h3>Issue: <a href="{{ issue.get_absolute_url }}">{{ issue.title }}</a></h3>
     <h5>Raised by {{ item.raised_by.username }}, {{ item.date_raised }} {% if item.date_due %}Date due: {{ item.date_due }}{% endif %}</h5>
+    {% if item.location  %}<h6>Loction: {{ item.location }}</h6>{% endif %}
     <h5><span class="label label-default">{{ item.visible }}</span> <span class="label label-info"> {{ item.status }}</span></h5>
     <hr>
     <p>{{ item.description }}</p>
