@@ -24,8 +24,11 @@ class Item(models.Model):
     locations = (
         ('Asset Delivery', 'Asset Delivery'), ('Hunter Valley', 'Hunter Valley'),
         ('Central & North West', 'Central & North West'), ('Port Waratah', 'Port Waratah'),
-        ('Maitland', 'Maitland'), ('Muswellbrook', 'Muswellbrook'), ('Scone', 'Scone'), ('Gunnedah', 'Gunnedah'),
-        ('Narrabri', 'Narrabri'), ('Tamworth', 'Tamworth'), ('Dubbo', 'Dubbo'), ('Binnaway', 'Binnaway')
+        ('Maitland', 'Maitland'), ('Muswellbrook', 'Muswellbrook'),
+        ('Scone', 'Scone'), ('Gunnedah', 'Gunnedah'),
+        ('Narrabri', 'Narrabri'), ('Tamworth', 'Tamworth'),
+        ('Dubbo', 'Dubbo'), ('Binnaway', 'Binnaway'),
+        ('Structures', 'Structures')
     )
 
 
