@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import auth
-from django.http import HttpResponse, Http404, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.db.models import Q
 from si_tracker.models import *
 from si_tracker.forms import *
@@ -102,7 +102,7 @@ def item_create_update(req, type='', item=''):
         Item = Task
         Form = TaskForm
     else:
-        return Http404()
+        return redirect(reverse('tracker:general'))
 
     if item:
         _item = get_object_or_404(Item, id=item)
@@ -144,7 +144,7 @@ def delete_item(req, type='', item=''):
     elif type == 'task':
         Item = Task
     else:
-        return Http404()
+        return redirect(reverse('tracker:general'))
     _item = get_object_or_404(Item, id=item)
     _item.delete()
     return redirect(reverse('tracker:general'))
