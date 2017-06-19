@@ -18,8 +18,8 @@ https://docs.djangoproject.com/en/1.11/howto/deployment/wsgi/
 import os
 import sys
 
-sys.path.append('/opt/bitnami/apps/django/django_projects/simpletracker')
-os.environ.setdefault("PYTHON_EGG_CACHE", "/opt/bitnami/apps/django/django_projects/simpletracker/egg_cache")
+sys.path.append('/opt/bitnami/apps/django/django_projects/si_tracker')
+os.environ.setdefault("PYTHON_EGG_CACHE", "/opt/bitnami/apps/django/django_projects/si_tracker/egg_cache")
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "simpletracker.settings")
 
