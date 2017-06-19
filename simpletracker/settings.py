@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'simpletracker.wsgi.application'
 DATABASES = {
   'default': {
       'ENGINE': 'django.db.backends.postgresql_psycopg2',
-      'NAME': 'DB',
+      'NAME': 'db',
       'HOST': '/opt/bitnami/postgresql',
       'PORT': '5432',
       'USER': 'user_tracker',
