@@ -18,9 +18,9 @@
                     <p>
                         <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="controls.filter.self" @click="controls.filter.self = !controls.filter.self">All items</a>
                         <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="!controls.filter.self" @click="controls.filter.self = !controls.filter.self">My items</a>
-                        <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Issue')">Critical Question <span v-if="controls.filter.issue" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
+                        <!--<a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Issue')">Critical Question <span v-if="controls.filter.issue" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
                         <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Task')">Task <span v-if="controls.filter.task"class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
-                        <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Idea')">Idea <span v-if="controls.filter.idea" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
+                        <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Idea')">Idea <span v-if="controls.filter.idea" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>-->
                        <span class="btn-group" role="group">
                             <button type="button" @click="controls.filter.status='Open'" class="btn btn-default">Open <span v-if="controls.filter.status === 'Open'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
                             <!--<button type="button" @click="controls.filter.status='In'" class="btn btn-default">In Progress <span v-if="controls.filter.status === 'In'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>-->
