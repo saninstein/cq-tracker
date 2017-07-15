@@ -34,7 +34,6 @@ def items(req):
     else:
         issues = Issue.objects.filter(Q(visible='Public') | Q(raised_by=req.user))
         _tasks = [list(x.task_set.filter(Q(visible='Public') | Q(raised_by=req.user)).values(*vals)) for x in issues]
-
     for task in _tasks:
         update_user_info(task)
         [x.update(url=reverse('tracker:item', args=['task', x.get('id')])) for x in task]
