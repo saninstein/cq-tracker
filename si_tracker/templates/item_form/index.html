@@ -10,7 +10,7 @@
     <script src="{% static 'js/datepick.js' %}"></script>
 
     <div class="panel panel-default my-panel-form">
-        <div class="panel-heading text-center">{% if item %}Update{% else %}New{% endif %} {{ type }}</div>
+        <div class="panel-heading text-center">{% if item %}Update{% else %}New{% endif %} {% if type == 'issue' %} Critical Question {% else %} {{ type }} {% endif %}</div>
         <div class="panel-body">
 
             <form style="" class="" action="

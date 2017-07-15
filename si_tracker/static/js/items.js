@@ -85,9 +85,12 @@ var app = new Vue({
                     else
                         this.items[i].hide = true;
                 return false;*/
+                console.log(this.controls.filter.status)
                 if(this.controls.filter.status === 'All') {
                     return true;
                 } else if(status.startsWith(this.controls.filter.status)) {
+                    return true
+                } else if(this.controls.filter.status === 'Open' && (status === 'In Progress' || status === 'Overdue')) {
                     return true
                 }
                 return false;
@@ -118,6 +121,11 @@ var app = new Vue({
                         p.hide = false;
                         p.date_raised = dateConvert(p.date_raised);
                         p.date_due = dateConvert(p.date_due);
+                        if(p.tasks.length) {
+                            p.expand = 0;
+                        } else {
+                            p.expand = -1;
+                        }
                         return p;
                     });
 

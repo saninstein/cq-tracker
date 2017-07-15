@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Simple Issue Tracker</title>
+    <title>Critical Question Register</title>
     <link rel="shortcut icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
     <script src="{% static 'js/jquery.min.js' %}"></script>
@@ -15,12 +15,12 @@
     <nav class="navbar navbar-inverse">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a class="navbar-brand" href="{% url 'tracker:general' %}">Simple Issue Tracker</a>
+                <a class="navbar-brand" href="{% url 'tracker:general' %}">Critical Question Register</a>
                 {% if user.is_authenticated %}
                     <span class="dropdown">
                         <a class="btn btn-primary navbar-btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Item <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url "tracker:new_item" 'issue' %}">New Issue</a></li>
+                            <li><a href="{% url "tracker:new_item" 'issue' %}">New Critical Question</a></li>
                             <li><a href="{% url "tracker:new_item" 'task' %}">New Task</a></li>
                         </ul>
                     </span>

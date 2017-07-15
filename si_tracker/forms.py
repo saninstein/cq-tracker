@@ -8,7 +8,11 @@ class IssueForm(forms.ModelForm):
 
     class Meta:
         model = Issue
-        exclude = []
+        fields = [
+            'title', 'location', 'purpose', 'description', 'output',
+            'resources', 'date_due', 'raised_by', 'assigned_to', 'visible',
+            'actions_taken', 'status', 'addressed'
+        ]
 
     def __init__(self, *args, **kwargs):
         super(IssueForm, self).__init__(*args, **kwargs)
@@ -19,11 +23,16 @@ class TaskForm(forms.ModelForm):
 
     class Meta:
         model = Task
-        exclude = []
+        fields = [
+            'title', 'type', 'location', 'purpose', 'description', 'output',
+            'resources', 'date_due', 'raised_by', 'assigned_to', 'visible',
+            'actions_taken', 'status', 'addressed', 'issue'
+        ]
 
     def __init__(self, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
         self.fields['date_due'].input_formats = ['%d/%m/%Y', '%Y-%m-%d']
+
 
 
 class UserCreateForm(UserCreationForm):

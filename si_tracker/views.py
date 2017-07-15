@@ -27,30 +27,32 @@ def general(req):
 
 @user_passes_test(lambda user: user.is_authenticated, login_url=reverse_lazy('tracker:login'), redirect_field_name='')
 def items(req):
+    vals = ('id', 'type', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location')
     if req.user.is_staff:
         issues = Issue.objects.all()
-        tasks = Task.objects.all()
+        _tasks = [list(x.task_set.all().values(*vals)) for x in issues]
     else:
         issues = Issue.objects.filter(Q(visible='Public') | Q(raised_by=req.user))
-        tasks = Task.objects.filter(Q(visible='Public') | Q(raised_by=req.user))
+        _tasks = [list(x.task_set.filter(Q(visible='Public') | Q(raised_by=req.user)).values(*vals)) for x in issues]
+
+    for task in _tasks:
+        update_user_info(task)
+        [x.update(url=reverse('tracker:item', args=['task', x.get('id')])) for x in task]
 
     issue_items = list(issues.values('id', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location'))
-    [x.update(type='Issue', url=reverse('tracker:item', args=['issue', x.get('id')])) for x in issue_items]
+    [x.update(type='Issue', url=reverse('tracker:item', args=['issue', x.get('id')]), tasks=y) for x, y in zip(issue_items, _tasks)]
 
+    items = sorted(issue_items, key=itemgetter('date_raised'), reverse=True)
+    update_user_info(items)
+    return JsonResponse({'results': items, 'user': req.user.id})
 
-    task_items = list(tasks.values('id', 'type', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location'))
-    [x.update(url=reverse('tracker:item', args=['task', x.get('id')])) for x in task_items]
-
-    items = sorted(task_items + issue_items, key=itemgetter('date_raised'), reverse=True)
-
+def update_user_info(items):
     for item in items:
         assigned_user = get_user(item.get('assigned_to', None))
         raised_user = get_user(item.get('raised_by', None))
         assigned_user = assigned_user.username if assigned_user else None
         raised_user = raised_user.username if raised_user else None
         item.update(assigned_user=assigned_user, raised_user=raised_user)
-    return JsonResponse({'results': items, 'user': req.user.id})
-
 
 def get_user(id):
     try:

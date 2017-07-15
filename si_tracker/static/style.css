@@ -12,3 +12,7 @@
 .space {
     width: 10px;
 }
+
+.bold-text td{
+    font-weight: bold !important;
+}

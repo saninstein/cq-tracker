@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-
+import datetime
 
 class Item(models.Model):
 
@@ -12,10 +12,11 @@ class Item(models.Model):
     statuses = (
         ('Open-New', 'Open-New'),
         ('In Progress', 'In Progress'),
+        ('Overdue', 'Overdue'),
         ('Closed-Resolved', 'Closed-Resolved'),
         ('Closed-NotResolved', 'Closed-NotResolved')
-    )
 
+    )
     visibility = (
         ('Private', 'Private'),
         ('Public', 'Public')
@@ -36,18 +37,25 @@ class Item(models.Model):
     title = models.CharField(max_length=150, verbose_name="Title")
     date_raised = models.DateField(auto_now_add=True, verbose_name="Date raised")
     date_due = models.DateField(null=True, blank=True, verbose_name="Date due")
-    description = models.TextField(verbose_name="Description", max_length=5000)
+    description = models.TextField(verbose_name="Context", max_length=5000)
     status = models.CharField(max_length=20, choices=statuses, default=statuses[0], verbose_name="Status")
     visible = models.CharField(max_length=10, default=visibility[1], choices=visibility, verbose_name="Visible")
-    actions_taken = models.TextField(max_length=5000, blank=True, default="", verbose_name="Actions taken")
+    actions_taken = models.TextField(max_length=5000, blank=True, default="", verbose_name="Comments")
     location = models.CharField(max_length=20, blank=True, choices=locations, verbose_name="Location")
+
+    purpose = models.CharField(max_length=500, blank=True, default="", verbose_name="Purpose")
+    output = models.TextField(verbose_name="Output", blank=True, default="", max_length=2000)
+    resources = models.TextField(verbose_name="Resources", blank=True, default="",  max_length=2000)
+    addressed = models.CharField(max_length=500, blank=True, default="", verbose_name="How addressed in current plan?")
+    date_closed = models.DateField(auto_now=True, verbose_name="Date closed")
+
 
     def __str__(self):
         return self.title
 
 
 class Issue(Item):
-    type = "Issue"
+    type = "Critical Question"
     raised_by = models.ForeignKey(User, verbose_name="Raised by", related_name='Issue')
     assigned_to = models.ForeignKey(User, verbose_name="Assigned to")
     # related_tasks = models.ManyToManyField(Task, related_name='issue', verbose_name="Related tasks")

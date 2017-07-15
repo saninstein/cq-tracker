@@ -1,19 +1,35 @@
 {% extends 'base.html' %}
-
+{% load startswith %}
 {% block content %}
     <h1>{{ item.title }}</h1>
-    <h5>Raised by {{ item.raised_by.username }}, {{ item.date_raised }} {% if item.date_due %}Date due: {{ item.date_due }}{% endif %}</h5>
+    <h5>Raised by {{ item.raised_by.username }}, {{ item.date_raised }} {% if item.date_due %}Date due: {{ item.date_due }}{% endif %} {% if item.status|startswith:'Closed' %} Date closed: {{ item.date_closed }} {% endif %}</h5>
     {% if item.location  %}<h6>Loction: {{ item.location }}</h6>{% endif %}
     <h5><span class="label label-default">{{ item.visible }}</span> <span class="label label-info"> {{ item.status }}</span></h5>
 
     <hr>
     <p>{{ item.description }}</p>
-    {% if item.actions_taken %}
-        <hr>
-        <p>{{ item.actions_taken }}</p>
-    {% endif %}
-
     <hr>
+    <h4>Comments</h4>
+    <p>{{ item.actions_taken }}</p>
+    <hr>
+
+    <h4>Purpose</h4>
+    <p>{{ item.purpose }}</p>
+    <hr>
+
+    <h4>Output</h4>
+    <p>{{ item.output }}</p>
+    <hr>
+
+    <h4>Resources</h4>
+    {{ item.resources }}
+    <hr>
+
+
+    <h4>How addressed in current plan?</h4>
+    <p>{{ item.addressed }}</p>
+    <hr>
+
     <h4>Child tasks</h4>
     <ul class="list-group">
         {% for task in tasks %}
@@ -25,4 +41,5 @@
 
     <a class="btn btn-default" href="{% url 'tracker:update_item' 'issue' item.id %}">Edit</a>
     {% if user.is_staff %}<a class="btn btn-danger" href="{% url 'tracker:delete_item' 'issue' item.id %}">Delete</a>{% endif %}
+    <h1></h1>
 {% endblock %}

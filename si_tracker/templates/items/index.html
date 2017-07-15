@@ -18,12 +18,12 @@
                     <p>
                         <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="controls.filter.self" @click="controls.filter.self = !controls.filter.self">All items</a>
                         <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="!controls.filter.self" @click="controls.filter.self = !controls.filter.self">My items</a>
-                        <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Issue')">Issue <span v-if="controls.filter.issue" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
+                        <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Issue')">Critical Question <span v-if="controls.filter.issue" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
                         <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Task')">Task <span v-if="controls.filter.task"class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
                         <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Idea')">Idea <span v-if="controls.filter.idea" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
                        <span class="btn-group" role="group">
                             <button type="button" @click="controls.filter.status='Open'" class="btn btn-default">Open <span v-if="controls.filter.status === 'Open'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
-                            <button type="button" @click="controls.filter.status='In'" class="btn btn-default">In Progress <span v-if="controls.filter.status === 'In'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                            <!--<button type="button" @click="controls.filter.status='In'" class="btn btn-default">In Progress <span v-if="controls.filter.status === 'In'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>-->
                             <button type="button" @click="controls.filter.status='Closed'" class="btn btn-default">Closed <span v-if="controls.filter.status === 'Closed'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
                             <button type="button" @click="controls.filter.status='All'" class="btn btn-default">All <span v-if="controls.filter.status === 'All'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
                         </span>
@@ -34,27 +34,57 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th></th>
                         <th><a href="javascript:void(0)" @click="sortBy('title')">Title</a></th>
-                        <th><a href="javascript:void(0)" @click="sortBy('date_raised')">Date Raised</a></th>
-                        <th><a href="javascript:void(0)" @click="sortBy('date_due')">Date Due</a></th>
-                        <th><a href="javascript:void(0)" @click="sortBy('type')">Type</a></th>
-                        <th><a href="javascript:void(0)" @click="sortBy('status')">Status</a></th>
-                        <th><a href="javascript:void(0)" @click="sortBy('raised_user')">Raised by</a></th>
-                        <th><a href="javascript:void(0)" @click="sortBy('assigned_user')">Assigned to</a></th>
                         <th><a href="javascript:void(0)" @click="sortBy('location')">Location</a></th>
+                        <th><a href="javascript:void(0)" @click="sortBy('assigned_user')">Assigned to</a></th>
+                        <th><a href="javascript:void(0)" @click="sortBy('date_due')">Date Due</a></th>
+                        <th><a href="javascript:void(0)" @click="sortBy('status')">Status</a></th>
+                        <th>Child tasks</th>
+                        <!--<th><a href="javascript:void(0)" @click="sortBy('date_raised')">Date Raised</a></th>
+                        <th><a href="javascript:void(0)" @click="sortBy('type')">Type</a></th>
+                        <th><a href="javascript:void(0)" @click="sortBy('raised_user')">Raised by</a></th>
+                        <th><a href="javascript:void(0)" @click="sortBy('assigned_user')">Assigned to</a></th>-->
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="item in items" v-if="!item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status)">
-                        <td><a :href="item.url">{{ item.title }}</a></td>
-                        <td>{{ item.date_raised }}</td>
-                        <td>{{ item.date_due }}</td>
-                        <td>{{ item.type }}</td>
-                        <td>{{ item.status }}</td>
-                        <td>{{ item.raised_user }}</td>
-                        <td>{{ item.assigned_user }}</td>
-                        <td>{{ item.location }}</td>
-                    </tr>
+                    <template v-for="item in items">
+                        <tr :class="{ success: item.type === 'Issue', 'bold-text': item.type === 'Issue', warning: item.type === 'Idea', active: item.type === 'Task' }"  v-if="!item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status)">
+                            <td v-if="item.type === 'Issue'"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
+                            <td v-if="item.type === 'Task'"><span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></td>
+                            <td v-if="item.type === 'Idea'"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></td>
+                            <td><a :href="item.url">{{ item.title }}</a></td>
+                            <td>{{ item.location }}</td>
+                            <td>{{ item.assigned_user }}</td>
+                            <td>{{ item.date_due }}</td>
+                            <td>{{ item.status }}</td>
+                            <td v-if="item.expand === 0" @click="item.expand = 1"><span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></td>
+                            <td v-else-if="item.expand === 1" @click="item.expand = 0"><span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span></td>
+                            <td v-else></td>
+
+                            <!--<td v-if="item.type === 'Issue'">Critical Question</td>
+                            <td v-if="item.type !== 'Issue'">{{ item.type }}</td>
+
+                            <td>{{ item.date_raised }}</td>
+
+                            <td>{{ item.raised_user }}</td>
+                            -->
+
+                        </tr>
+
+                        <template v-for="task in item.tasks">
+                            <tr :class="{ warning: task.type === 'Idea', active: task.type === 'Task' }"  v-if="!item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status) && item.expand === 1">
+                                <td v-if="task.type === 'Task'"><span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></td>
+                                <td v-if="task.type === 'Idea'"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></td>
+                                <td><a :href="task.url">{{ task.title }}</a></td>
+                                <td>{{ task.location }}</td>
+                                <td>{{ task.assigned_user }}</td>
+                                <td>{{ task.date_due }}</td>
+                                <td>{{ task.status }}</td>
+                                <td></td>
+                            </tr>
+                        </template>
+                    </template>
                 </tbody>
             </table>
         </div>
