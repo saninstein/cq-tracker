@@ -2,30 +2,29 @@
 {% load startswith %}
 {% block content %}
     <h1>{{ item.title }}</h1>
-    <h3>Critical Question: <a href="{{ issue.get_absolute_url }}">{{ issue.title }}</a></h3>
-    <h5>Raised by {{ item.raised_by.username }}, {{ item.date_raised }} {% if item.date_due %}Date due: {{ item.date_due }}{% endif %} {% if item.status|startswith:'Closed' %} Date closed: {{ item.date_closed }} {% endif %}</h5>
-    {% if item.location  %}<h6>Loction: {{ item.location }}</h6>{% endif %}
+    <h4>Type: {{ item.type }}</h4>
+    <h5>Critical Question: <a href="{{ issue.get_absolute_url }}">{{ issue.title }}</a></h5>
+    <h5>Raised by {{ item.raised_by.username }}, Assigned to {{ item.assigned_to.username }}, Due date: {{ item.date_due }} {% if item.status|startswith:'Closed' %}, Date closed: {{ item.date_closed }} {% endif %}</h5>
+    <h6>Loction: {% if item.location %}{{ item.location }}{% else %}---{% endif %}</h6>
     <h5><span class="label label-default">{{ item.visible }}</span> <span class="label label-info"> {{ item.status }}</span></h5>
+
+    <br>
     <hr>
+    <h4>Context</h4>
     <p>{{ item.description }}</p>
     <hr>
     <h4>Comments</h4>
     <p>{{ item.actions_taken }}</p>
     <hr>
-
     <h4>Purpose</h4>
     <p>{{ item.purpose }}</p>
     <hr>
-
     <h4>Output</h4>
     <p>{{ item.output }}</p>
     <hr>
-
     <h4>Resources</h4>
     {{ item.resources }}
     <hr>
-
-
     <h4>How addressed in current plan?</h4>
     <p>{{ item.addressed }}</p>
     <hr>

@@ -17,6 +17,8 @@ class IssueForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(IssueForm, self).__init__(*args, **kwargs)
         self.fields['date_due'].input_formats = ['%d/%m/%Y', '%Y-%m-%d']
+        self.fields['output'].widget.attrs['rows'] = 4
+        self.fields['resources'].widget.attrs['rows'] = 4
 
 
 class TaskForm(forms.ModelForm):
@@ -32,6 +34,8 @@ class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
         self.fields['date_due'].input_formats = ['%d/%m/%Y', '%Y-%m-%d']
+        self.fields['output'].widget.attrs['rows'] = 4
+        self.fields['resources'].widget.attrs['rows'] = 4
 
 
 

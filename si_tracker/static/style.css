@@ -16,3 +16,13 @@
 .bold-text td{
     font-weight: bold !important;
 }
+
+.fa-question-circle {
+    color: #5cb85c;
+}
+
+.fa-info-circle {
+    color: #eea236;
+}
+
+

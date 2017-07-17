@@ -61,7 +61,7 @@ class Issue(Item):
     # related_tasks = models.ManyToManyField(Task, related_name='issue', verbose_name="Related tasks")
 
     def get_absolute_url(self):
-        return reverse('tracker:item', args=['issue', self.id])
+        return reverse('tracker:item', args=['critical-question', self.id])
 
 
 class Task(Item):

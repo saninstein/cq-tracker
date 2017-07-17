@@ -2,8 +2,10 @@
 {% load staticfiles %}
 
 {% block content %}
+    <link rel="stylesheet" href="{% static "css/font-awesome.min.css" %}">
     <script src="{% static "js/vue.js" %}"></script>
     <script src="{% static "js/axios.min.js" %}"></script>
+    <script src="{% static "js/jquery.cookie.js" %}"></script>
 {#    <hr>#}
 {#    {% for item in items %}#}
 {#        <h3><a href="{% url 'tracker:item' item.type item.id %}">{{ item.title }}</a> {{ item.date_raised }} {{ item.type }}</h3>#}
@@ -16,16 +18,16 @@
 
                 <div class="panel-body">
                     <p>
-                        <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="controls.filter.self" @click="controls.filter.self = !controls.filter.self">All items</a>
-                        <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="!controls.filter.self" @click="controls.filter.self = !controls.filter.self">My items</a>
+                        <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="controls.filter.self" @click="controls.filter.self = !controls.filter.self; filterChanged()">All items</a>
+                        <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="!controls.filter.self" @click="controls.filter.self = !controls.filter.self; filterChanged()">My items</a>
                         <!--<a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Issue')">Critical Question <span v-if="controls.filter.issue" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
                         <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Task')">Task <span v-if="controls.filter.task"class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
                         <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Idea')">Idea <span v-if="controls.filter.idea" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>-->
                        <span class="btn-group" role="group">
-                            <button type="button" @click="controls.filter.status='Open'" class="btn btn-default">Open <span v-if="controls.filter.status === 'Open'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                            <button type="button" @click="controls.filter.status='Open'; filterChanged()" class="btn btn-default">Open <span v-if="controls.filter.status === 'Open'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
                             <!--<button type="button" @click="controls.filter.status='In'" class="btn btn-default">In Progress <span v-if="controls.filter.status === 'In'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>-->
-                            <button type="button" @click="controls.filter.status='Closed'" class="btn btn-default">Closed <span v-if="controls.filter.status === 'Closed'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
-                            <button type="button" @click="controls.filter.status='All'" class="btn btn-default">All <span v-if="controls.filter.status === 'All'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                            <button type="button" @click="controls.filter.status='Closed'; filterChanged()" class="btn btn-default">Closed <span v-if="controls.filter.status === 'Closed'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                            <button type="button" @click="controls.filter.status='All'; filterChanged()" class="btn btn-default">All <span v-if="controls.filter.status === 'All'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
                         </span>
                     </p>
                 </div>
@@ -49,10 +51,8 @@
                 </thead>
                 <tbody>
                     <template v-for="item in items">
-                        <tr :class="{ success: item.type === 'Issue', 'bold-text': item.type === 'Issue', warning: item.type === 'Idea', active: item.type === 'Task' }"  v-if="!item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status)">
-                            <td v-if="item.type === 'Issue'"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></td>
-                            <td v-if="item.type === 'Task'"><span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></td>
-                            <td v-if="item.type === 'Idea'"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></td>
+                        <tr class="bold-text"  v-if="!item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status)">
+                            <td v-if="item.type === 'Issue'" data-toggle="tooltip" data-placement="left" title="Critical Question"><i class="fa fa-question-circle" aria-hidden="true"></i></td>
                             <td><a :href="item.url">{{ item.title }}</a></td>
                             <td>{{ item.location }}</td>
                             <td>{{ item.assigned_user }}</td>
@@ -73,9 +73,9 @@
                         </tr>
 
                         <template v-for="task in item.tasks">
-                            <tr :class="{ warning: task.type === 'Idea', active: task.type === 'Task' }"  v-if="!item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status) && item.expand === 1">
-                                <td v-if="task.type === 'Task'"><span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></td>
-                                <td v-if="task.type === 'Idea'"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></td>
+                            <tr  v-if="!item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status) && item.expand === 1">
+                                <td v-if="task.type === 'Task'" data-toggle="tooltip" data-placement="left" title="Task"><i class="fa fa-cog" aria-hidden="true"></i></td>
+                                <td v-if="task.type === 'Idea'" data-toggle="tooltip" data-placement="left" title="Idea"><i class="fa fa-info-circle" aria-hidden="true"></i></td>
                                 <td><a :href="task.url">{{ task.title }}</a></td>
                                 <td>{{ task.location }}</td>
                                 <td>{{ task.assigned_user }}</td>

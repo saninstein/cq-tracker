@@ -26,6 +26,10 @@ var app = new Vue({
             }
         },
         methods: {
+            filterChanged: function () {
+                $.cookie('filter', JSON.stringify(this.controls.filter), { expires: 365, path: '/' });
+            },
+
             onlyIssue: function () {
                 this.items = this.items.filter(function(p) {
                     return p['type'] === 'Issue';
@@ -113,6 +117,7 @@ var app = new Vue({
             }
         },
         created: function () {
+
             var data;
             axios.get("/items")
                 .then(function (res) {
@@ -134,6 +139,11 @@ var app = new Vue({
                 .catch(function (error) {
                     console.log(error)
                 });
+        },
+        mounted: function () {
+            var filters = $.cookie('filter');
+            if(filters)
+                this.controls.filter = JSON.parse(filters);
         }
     });
 
@@ -144,3 +154,4 @@ function dateConvert(dateStr) {
     dateAr.reverse();
     return dateAr.join('/');
 }
+

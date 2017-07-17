@@ -39,7 +39,7 @@ def items(req):
         [x.update(url=reverse('tracker:item', args=['task', x.get('id')])) for x in task]
 
     issue_items = list(issues.values('id', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location'))
-    [x.update(type='Issue', url=reverse('tracker:item', args=['issue', x.get('id')]), tasks=y) for x, y in zip(issue_items, _tasks)]
+    [x.update(type='Issue', url=reverse('tracker:item', args=['critical-question', x.get('id')]), tasks=y) for x, y in zip(issue_items, _tasks)]
 
     items = sorted(issue_items, key=itemgetter('date_raised'), reverse=True)
     update_user_info(items)
@@ -70,7 +70,7 @@ def get_task(args, task):
 @user_passes_test(lambda user: user.is_authenticated, login_url=reverse_lazy('tracker:login'), redirect_field_name='')
 def item(req, type='', item=''):
     args = dict()
-    if type.lower() == 'issue':
+    if type.lower() == 'critical-question':
         template = 'issue/index.html'
         Item = Issue
         get_item = get_issue
@@ -96,7 +96,7 @@ def item(req, type='', item=''):
 def item_create_update(req, type='', item=''):
     args = dict()
     args['type'] = type
-    if type == 'issue':
+    if type == 'critical-question':
         Item = Issue
         Form = IssueForm
     elif type == 'task':
@@ -140,7 +140,7 @@ def item_create_update(req, type='', item=''):
 
 @user_passes_test(lambda user: user.is_staff, login_url=reverse_lazy('tracker:general'), redirect_field_name='')
 def delete_item(req, type='', item=''):
-    if type == 'issue':
+    if type == 'critical-question':
         Item = Issue
     elif type == 'task':
         Item = Task
