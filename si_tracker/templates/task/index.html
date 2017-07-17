@@ -5,7 +5,7 @@
     <h4>Type: {{ item.type }}</h4>
     <h5>Critical Question: <a href="{{ issue.get_absolute_url }}">{{ issue.title }}</a></h5>
     <h5>Raised by {{ item.raised_by.username }}, Assigned to {{ item.assigned_to.username }}, Due date: {{ item.date_due }} {% if item.status|startswith:'Closed' %}, Date closed: {{ item.date_closed }} {% endif %}</h5>
-    <h6>Loction: {% if item.location %}{{ item.location }}{% else %}---{% endif %}</h6>
+    <h6>Location: {% if item.location %}{{ item.location }}{% else %}---{% endif %}</h6>
     <h5><span class="label label-default">{{ item.visible }}</span> <span class="label label-info"> {{ item.status }}</span></h5>
 
     <br>
