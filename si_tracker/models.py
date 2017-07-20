@@ -9,14 +9,19 @@ class Item(models.Model):
         abstract = True
         ordering = ['-date_raised', '-id']
 
-    statuses = (
-        ('Open-New', 'Open-New'),
+    open_statuses = (
+        ('New', 'New'),
         ('In Progress', 'In Progress'),
-        ('Overdue', 'Overdue'),
-        ('Closed-Resolved', 'Closed-Resolved'),
-        ('Closed-NotResolved', 'Closed-NotResolved')
-
+        ('Overdue', 'Overdue')
     )
+
+    closed_statuses = (
+        ('Resolved', 'Resolved'),
+        ('NotResolved', 'NotResolved')
+    )
+
+    statuses =  open_statuses + closed_statuses
+
     visibility = (
         ('Private', 'Private'),
         ('Public', 'Public')

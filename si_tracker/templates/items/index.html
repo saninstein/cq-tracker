@@ -15,8 +15,7 @@
     {% verbatim %}
         <div id="app">
             <div class="panel panel-default">
-
-                <div class="panel-body">
+                <div class="panel-heading">
                     <p>
                         <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="controls.filter.self" @click="controls.filter.self = !controls.filter.self; filterChanged()">All items</a>
                         <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="!controls.filter.self" @click="controls.filter.self = !controls.filter.self; filterChanged()">My items</a>
@@ -31,62 +30,65 @@
                         </span>
                     </p>
                 </div>
-                <div class="panel-footer">Filters</div>
-            </div>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th><a href="javascript:void(0)" @click="sortBy('title')">Title</a></th>
-                        <th><a href="javascript:void(0)" @click="sortBy('location')">Location</a></th>
-                        <th><a href="javascript:void(0)" @click="sortBy('assigned_user')">Assigned to</a></th>
-                        <th><a href="javascript:void(0)" @click="sortBy('date_due')">Date Due</a></th>
-                        <th><a href="javascript:void(0)" @click="sortBy('status')">Status</a></th>
-                        <th>Child tasks</th>
-                        <!--<th><a href="javascript:void(0)" @click="sortBy('date_raised')">Date Raised</a></th>
-                        <th><a href="javascript:void(0)" @click="sortBy('type')">Type</a></th>
-                        <th><a href="javascript:void(0)" @click="sortBy('raised_user')">Raised by</a></th>
-                        <th><a href="javascript:void(0)" @click="sortBy('assigned_user')">Assigned to</a></th>-->
-                    </tr>
-                </thead>
-                <tbody>
-                    <template v-for="item in items">
-                        <tr class="bold-text"  v-if="!item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status)">
-                            <td v-if="item.type === 'Issue'" data-toggle="tooltip" data-placement="left" title="Critical Question"><i class="fa fa-question-circle" aria-hidden="true"></i></td>
-                            <td><a :href="item.url">{{ item.title }}</a></td>
-                            <td>{{ item.location }}</td>
-                            <td>{{ item.assigned_user }}</td>
-                            <td>{{ item.date_due }}</td>
-                            <td>{{ item.status }}</td>
-                            <td v-if="item.expand === 0" @click="item.expand = 1"><span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></td>
-                            <td v-else-if="item.expand === 1" @click="item.expand = 0"><span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span></td>
-                            <td v-else></td>
-
-                            <!--<td v-if="item.type === 'Issue'">Critical Question</td>
-                            <td v-if="item.type !== 'Issue'">{{ item.type }}</td>
-
-                            <td>{{ item.date_raised }}</td>
-
-                            <td>{{ item.raised_user }}</td>
-                            -->
-
-                        </tr>
-
-                        <template v-for="task in item.tasks">
-                            <tr  v-if="!item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status) && item.expand === 1">
-                                <td v-if="task.type === 'Task'" data-toggle="tooltip" data-placement="left" title="Task"><i class="fa fa-cog" aria-hidden="true"></i></td>
-                                <td v-if="task.type === 'Idea'" data-toggle="tooltip" data-placement="left" title="Idea"><i class="fa fa-info-circle" aria-hidden="true"></i></td>
-                                <td><a :href="task.url">{{ task.title }}</a></td>
-                                <td>{{ task.location }}</td>
-                                <td>{{ task.assigned_user }}</td>
-                                <td>{{ task.date_due }}</td>
-                                <td>{{ task.status }}</td>
-                                <td></td>
+                <div class="panel-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th><a href="javascript:void(0)" @click="sortBy('title')">Title</a></th>
+                                <th><a href="javascript:void(0)" @click="sortBy('location')">Location</a></th>
+                                <th><a href="javascript:void(0)" @click="sortBy('assigned_user')">Assigned to</a></th>
+                                <th><a href="javascript:void(0)" @click="sortBy('date_due')">Date Due</a></th>
+                                <th><a href="javascript:void(0)" @click="sortBy('status')">Status</a></th>
+                                <th>Child tasks</th>
+                                <!--<th><a href="javascript:void(0)" @click="sortBy('date_raised')">Date Raised</a></th>
+                                <th><a href="javascript:void(0)" @click="sortBy('type')">Type</a></th>
+                                <th><a href="javascript:void(0)" @click="sortBy('raised_user')">Raised by</a></th>
+                                <th><a href="javascript:void(0)" @click="sortBy('assigned_user')">Assigned to</a></th>-->
                             </tr>
-                        </template>
-                    </template>
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody>
+                            <template v-for="item in items">
+                                <tr class="bold-text"  v-if="!item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status)">
+                                    <td v-if="item.type === 'Issue'" data-toggle="tooltip" data-placement="left" title="Critical Question"><i class="fa fa-question-circle" aria-hidden="true"></i></td>
+                                    <td><a :href="item.url">{{ item.title }}</a></td>
+                                    <td>{{ item.location }}</td>
+                                    <td>{{ item.assigned_user }}</td>
+                                    <td>{{ item.date_due }}</td>
+                                    <td>{{ item.status }}</td>
+                                    <td v-if="item.expand === 0" @click="item.expand = 1"><span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></td>
+                                    <td v-else-if="item.expand === 1" @click="item.expand = 0"><span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span></td>
+                                    <td v-else></td>
+
+                                    <!--<td v-if="item.type === 'Issue'">Critical Question</td>
+                                    <td v-if="item.type !== 'Issue'">{{ item.type }}</td>
+
+                                    <td>{{ item.date_raised }}</td>
+
+                                    <td>{{ item.raised_user }}</td>
+                                    -->
+
+                                </tr>
+
+                                <template v-for="task in item.tasks">
+                                    <tr  v-if="!item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status) && item.expand === 1">
+                                        <td v-if="task.type === 'Task'" data-toggle="tooltip" data-placement="left" title="Task"><i class="fa fa-cog" aria-hidden="true"></i></td>
+                                        <td v-if="task.type === 'Idea'" data-toggle="tooltip" data-placement="left" title="Idea"><i class="fa fa-info-circle" aria-hidden="true"></i></td>
+                                        <td><a :href="task.url">{{ task.title }}</a></td>
+                                        <td>{{ task.location }}</td>
+                                        <td>{{ task.assigned_user }}</td>
+                                        <td>{{ task.date_due }}</td>
+                                        <td>{{ task.status }}</td>
+                                        <td></td>
+                                    </tr>
+                                </template>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
         </div>
     {% endverbatim %}
     <script src="{% static "js/items.js" %}"></script>

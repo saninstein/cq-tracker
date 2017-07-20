@@ -6,6 +6,7 @@ var app = new Vue({
         data: {
             items: "None",
             user: null,
+            statuses: null,
             controls:{
                 sorts: {
                     title: true,
@@ -74,31 +75,13 @@ var app = new Vue({
             },
 
             filterStatus: function (status) {
-                /* if (status != 'All') {
-                    this.controls.filter.issue = true;
-                    this.controls.filter.task = true;
-                    this.controls.filter.idea = true;
-                }
-
-                this.controls.filter.status = status;
-                for (var i = 0; i < this.items.length; i++)
-                    if(this.items[i]['status'].startsWith(status))
-                        this.items[i].hide = false;
-                    else if(status === 'All')
-                        this.items[i].hide = false;
-                    else
-                        this.items[i].hide = true;
-                return false;*/
-                console.log(this.controls.filter.status)
-                if(this.controls.filter.status === 'All') {
+                if(this.controls.filter.status === 'All')
                     return true;
-                } else if(status.startsWith(this.controls.filter.status)) {
-                    return true
-                } else if(this.controls.filter.status === 'Open' && (status === 'In Progress' || status === 'Overdue')) {
-                    return true
-                }
+                else if(this.controls.filter.status === 'Open')
+                    return this.statuses.open.indexOf(status) !== -1 ? true : false;
+                else if(this.controls.filter.status === 'Closed')
+                    return this.statuses.close.indexOf(status) !== -1 ? true : false;
                 return false;
-
             },
 
             filterBy: function (field, param) {
@@ -133,7 +116,7 @@ var app = new Vue({
                         }
                         return p;
                     });
-
+                    app.$data.statuses = res.data['statuses'];
                     app.$data.user = res.data['user'];
                 })
                 .catch(function (error) {

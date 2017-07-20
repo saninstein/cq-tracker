@@ -43,7 +43,11 @@ def items(req):
 
     items = sorted(issue_items, key=itemgetter('date_raised'), reverse=True)
     update_user_info(items)
-    return JsonResponse({'results': items, 'user': req.user.id})
+    statuses = {
+        'open': [x[0] for x in Item.open_statuses],
+        'close': [x[0] for x in Item.closed_statuses]
+    }
+    return JsonResponse({'results': items, 'user': req.user.id, 'statuses': statuses})
 
 def update_user_info(items):
     for item in items:
