@@ -9,6 +9,7 @@ from django.db.models import Q
 from si_tracker.models import *
 from si_tracker.forms import *
 from operator import itemgetter
+from pprint import pprint
 
 def user_context(req):
     return {
@@ -27,27 +28,43 @@ def general(req):
 
 @user_passes_test(lambda user: user.is_authenticated, login_url=reverse_lazy('tracker:login'), redirect_field_name='')
 def items(req):
-    vals = ('id', 'type', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location')
+    vals_tasks = ('id', 'type', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location')
+    vals_issues = ('id', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location')
     if req.user.is_staff:
         issues = Issue.objects.all()
-        _tasks = [list(x.task_set.all().values(*vals)) for x in issues]
+        tasks = Task.objects.all()
+        _tasks = [list(x.task_set.all().values('id')) for x in issues]
+        _issues = [list(x.issue.all().values('id')) for x in tasks]
+
     else:
+        tasks = Task.objects.filter(Q(visible='Public') | Q(raised_by=req.user))
         issues = Issue.objects.filter(Q(visible='Public') | Q(raised_by=req.user))
-        _tasks = [list(x.task_set.filter(Q(visible='Public') | Q(raised_by=req.user)).values(*vals)) for x in issues]
-    for task in _tasks:
-        update_user_info(task)
-        [x.update(url=reverse('tracker:item', args=['task', x.get('id')])) for x in task]
+        _tasks = [list(x.task_set.filter(Q(visible='Public') | Q(raised_by=req.user)).values('id')) for x in issues]
+        _issues = [list(x.issue.filter(Q(visible='Public') | Q(raised_by=req.user)).values('id')) for x in tasks]
 
-    issue_items = list(issues.values('id', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location'))
-    [x.update(type='Issue', url=reverse('tracker:item', args=['critical-question', x.get('id')]), tasks=y) for x, y in zip(issue_items, _tasks)]
 
-    items = sorted(issue_items, key=itemgetter('date_raised'), reverse=True)
+    issue_items = list(issues.values(*vals_issues))
+    [
+        x.update(type='Issue', url=reverse('tracker:item', args=['critical-question', x.get('id')]), tasks=y)
+        for x, y in zip(issue_items, _tasks)
+    ]
+
+
+    task_items = list(tasks.values(*vals_tasks))
+    [
+        x.update(url=reverse('tracker:item', args=['task', x.get('id')]), issues=y)
+        for x, y in zip(task_items, _issues)
+    ]
+
+    print(issue_items + task_items)
+    items = sorted(issue_items + task_items, key=itemgetter('date_raised'), reverse=True)
+
     update_user_info(items)
     statuses = {
         'open': [x[0] for x in Item.open_statuses],
         'close': [x[0] for x in Item.closed_statuses]
     }
-    return JsonResponse({'results': items, 'user': req.user.id, 'statuses': statuses})
+    return JsonResponse({'items': items, 'user': req.user.id, 'statuses': statuses})
 
 def update_user_info(items):
     for item in items:
@@ -68,7 +85,7 @@ def get_issue(args, issue):
     args['tasks'] = issue.task_set.all()
 
 def get_task(args, task):
-    args['issue'] = task.issue
+    args['issues'] = task.issue.all()
 
 
 @user_passes_test(lambda user: user.is_authenticated, login_url=reverse_lazy('tracker:login'), redirect_field_name='')

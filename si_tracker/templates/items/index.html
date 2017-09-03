@@ -6,6 +6,7 @@
     <script src="{% static "js/vue.js" %}"></script>
     <script src="{% static "js/axios.min.js" %}"></script>
     <script src="{% static "js/jquery.cookie.js" %}"></script>
+    <link rel="stylesheet" href="{% static "style.css" %}">
 {#    <hr>#}
 {#    {% for item in items %}#}
 {#        <h3><a href="{% url 'tracker:item' item.type item.id %}">{{ item.title }}</a> {{ item.date_raised }} {{ item.type }}</h3>#}
@@ -14,9 +15,17 @@
 
     {% verbatim %}
         <div id="app">
+
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <p>
+
+
+                <div class="panel-body">
+                    <ul class="nav nav-tabs">
+                        <li role="presentation" @click="controls.panelIssue = true" :class="{ 'active': controls.panelIssue }"><a href="#">CQ`s</a></li>
+                        <li role="presentation" @click="controls.panelIssue = false" :class="{ 'active': !controls.panelIssue }"><a href="#">Tasks</a></li>
+                    </ul>
+
+                    <div class="filter-panel">
                         <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="controls.filter.self" @click="controls.filter.self = !controls.filter.self; filterChanged()">All items</a>
                         <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="!controls.filter.self" @click="controls.filter.self = !controls.filter.self; filterChanged()">My items</a>
                         <!--<a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Issue')">Critical Question <span v-if="controls.filter.issue" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
@@ -28,9 +37,7 @@
                             <button type="button" @click="controls.filter.status='Closed'; filterChanged()" class="btn btn-default">Closed <span v-if="controls.filter.status === 'Closed'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
                             <button type="button" @click="controls.filter.status='All'; filterChanged()" class="btn btn-default">All <span v-if="controls.filter.status === 'All'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
                         </span>
-                    </p>
-                </div>
-                <div class="panel-body">
+                    </div>
                     <table class="table">
                         <thead>
                             <tr>
@@ -49,7 +56,7 @@
                         </thead>
                         <tbody>
                             <template v-for="item in items">
-                                <tr class="bold-text"  v-if="!item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status)">
+                                <tr class="bold-text"  v-if="item.type === 'Issue' && !item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status)">
                                     <td v-if="item.type === 'Issue'" data-toggle="tooltip" data-placement="left" title="Critical Question"><i class="fa fa-question-circle" aria-hidden="true"></i></td>
                                     <td><a :href="item.url">{{ item.title }}</a></td>
                                     <td>{{ item.location }}</td>
@@ -70,15 +77,15 @@
 
                                 </tr>
 
-                                <template v-for="task in item.tasks">
-                                    <tr  v-if="!item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status) && item.expand === 1">
-                                        <td v-if="task.type === 'Task'" data-toggle="tooltip" data-placement="left" title="Task"><i class="fa fa-cog" aria-hidden="true"></i></td>
-                                        <td v-if="task.type === 'Idea'" data-toggle="tooltip" data-placement="left" title="Idea"><i class="fa fa-info-circle" aria-hidden="true"></i></td>
-                                        <td><a :href="task.url">{{ task.title }}</a></td>
-                                        <td>{{ task.location }}</td>
-                                        <td>{{ task.assigned_user }}</td>
-                                        <td>{{ task.date_due }}</td>
-                                        <td>{{ task.status }}</td>
+                                <template v-for="subitem in items">
+                                    <tr  v-if="subitem.type != 'Issue' && !item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status) && item.expand === 1">
+                                        <td v-if="subitem.type === 'Task'" data-toggle="tooltip" data-placement="left" title="Task"><i class="fa fa-cog" aria-hidden="true"></i></td>
+                                        <td v-if="subitem.type === 'Idea'" data-toggle="tooltip" data-placement="left" title="Idea"><i class="fa fa-info-circle" aria-hidden="true"></i></td>
+                                        <td><a :href="subitem.url">{{ subitem.title }}</a></td>
+                                        <td>{{ subitem.location }}</td>
+                                        <td>{{ subitem.assigned_user }}</td>
+                                        <td>{{ subitem.date_due }}</td>
+                                        <td>{{ subitem.status }}</td>
                                         <td></td>
                                     </tr>
                                 </template>

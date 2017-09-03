@@ -5,9 +5,11 @@ var app = new Vue({
         el: '#app',
         data: {
             items: "None",
+            tasks: "None",
             user: null,
             statuses: null,
             controls:{
+                panelIssue: true,
                 sorts: {
                     title: true,
                     date1: true,
@@ -67,7 +69,11 @@ var app = new Vue({
                     return false;
                 }
                 console.log(param + ':', how);
-                how = how ? (p1, p2) => { return (p1 < p2) ? -1 : (p1 > p2) ? 1 : 0 } : (p1, p2) => { return (p1 > p2) ? -1 : (p1 < p2) ? 1 : 0 };
+                how = how ? (p1, p2) => {
+                    return (p1 < p2) ? -1 : (p1 > p2) ? 1 : 0
+                } : (p1, p2) => {
+                    return (p1 > p2) ? -1 : (p1 < p2) ? 1 : 0
+                }
 
                 this.items.sort(function (p1, p2) {
                     return how(!p1[param] ? ' ' : p1[param].toLowerCase(), !p2[param] ? ' ' : p2[param].toLowerCase())
@@ -104,18 +110,8 @@ var app = new Vue({
             var data;
             axios.get("/items")
                 .then(function (res) {
-                    console.log("Res: ", res.data['results']);
-                    app.$data.items = res.data['results'].map(function (p) {
-                        p.hide = false;
-                        p.date_raised = dateConvert(p.date_raised);
-                        p.date_due = dateConvert(p.date_due);
-                        if(p.tasks.length) {
-                            p.expand = 0;
-                        } else {
-                            p.expand = -1;
-                        }
-                        return p;
-                    });
+                    console.log("Res: ", res.data);
+                    app.$data.items = res.data['items'].map(cookData);
                     app.$data.statuses = res.data['statuses'];
                     app.$data.user = res.data['user'];
                 })
@@ -137,4 +133,17 @@ function dateConvert(dateStr) {
     dateAr.reverse();
     return dateAr.join('/');
 }
+
+function cookData(p) {
+    p.hide = false;
+    p.date_raised = dateConvert(p.date_raised);
+    p.date_due = dateConvert(p.date_due);
+    if (true) {
+        p.expand = 0;
+    } else {
+        p.expand = -1;
+    }
+    return p
+}
+
 

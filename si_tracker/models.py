@@ -74,7 +74,7 @@ class Task(Item):
     raised_by = models.ForeignKey(User, verbose_name="Raised by", related_name='Task')
     assigned_to = models.ForeignKey(User, verbose_name="Assigned to")
     type = models.CharField(max_length=10, choices=types, default=types[0], verbose_name="Type")
-    issue = models.ForeignKey(Issue, verbose_name='Issue')
+    issue = models.ManyToManyField(Issue, verbose_name='Issue')
 
     def get_absolute_url(self):
         return reverse('tracker:item', args=['task', self.id])
