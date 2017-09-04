@@ -24,11 +24,25 @@ var app = new Vue({
                     issue: true,
                     idea:true,
                     task: true,
-                    status: 'Open',
+                    status: 'Open'
                 }
             }
         },
         methods: {
+            isChildOfIssue: function(id, subitem_id) {
+                for(var i = 0; i < this.items.length; i++)
+                    if(id === this.items[i].id && this.items[i].type === "Issue")
+                        return this.items[i].tasks.indexOf(subitem_id) != -1 ? true : false;
+                return false;
+            },
+
+            isChildOfTask: function (id, subitem_id) {
+                for(var i = 0; i < this.items.length; i++)
+                    if(id === this.items[i].id && this.items[i].type !== "Issue")
+                        return this.items[i].issues.indexOf(subitem_id) != -1 ? true : false;
+                return false;
+            },
+
             filterChanged: function () {
                 $.cookie('filter', JSON.stringify(this.controls.filter), { expires: 365, path: '/' });
             },

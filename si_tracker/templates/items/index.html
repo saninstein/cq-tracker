@@ -28,6 +28,8 @@
                     <div class="filter-panel">
                         <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="controls.filter.self" @click="controls.filter.self = !controls.filter.self; filterChanged()">All items</a>
                         <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="!controls.filter.self" @click="controls.filter.self = !controls.filter.self; filterChanged()">My items</a>
+
+                        <a href="javascript:void(0)" class="btn btn-primary" role="button" @click="controls.panelIssue = !controls.panelIssue">Issue/Task</a>
                         <!--<a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Issue')">Critical Question <span v-if="controls.filter.issue" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
                         <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Task')">Task <span v-if="controls.filter.task"class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
                         <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Idea')">Idea <span v-if="controls.filter.idea" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>-->
@@ -54,7 +56,7 @@
                                 <th><a href="javascript:void(0)" @click="sortBy('assigned_user')">Assigned to</a></th>-->
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody v-if="controls.panelIssue">
                             <template v-for="item in items">
                                 <tr class="bold-text"  v-if="item.type === 'Issue' && !item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status)">
                                     <td v-if="item.type === 'Issue'" data-toggle="tooltip" data-placement="left" title="Critical Question"><i class="fa fa-question-circle" aria-hidden="true"></i></td>
@@ -77,10 +79,47 @@
 
                                 </tr>
 
-                                <template v-for="subitem in items">
-                                    <tr  v-if="subitem.type != 'Issue' && !item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status) && item.expand === 1">
+                                <template v-for="subitem in items" v-if="subitem.type != 'Issue'">
+                                    <tr  v-if="isChildOfIssue(item.id, subitem.id) && !item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status) && item.expand === 1">
                                         <td v-if="subitem.type === 'Task'" data-toggle="tooltip" data-placement="left" title="Task"><i class="fa fa-cog" aria-hidden="true"></i></td>
                                         <td v-if="subitem.type === 'Idea'" data-toggle="tooltip" data-placement="left" title="Idea"><i class="fa fa-info-circle" aria-hidden="true"></i></td>
+                                        <td><a :href="subitem.url">{{ subitem.title }}</a></td>
+                                        <td>{{ subitem.location }}</td>
+                                        <td>{{ subitem.assigned_user }}</td>
+                                        <td>{{ subitem.date_due }}</td>
+                                        <td>{{ subitem.status }}</td>
+                                        <td></td>
+                                    </tr>
+                                </template>
+                            </template>
+                        </tbody>
+                        <tbody v-if="!controls.panelIssue">
+                            <template v-for="item in items">
+                                <tr class="bold-text"  v-if="item.type !== 'Issue' && !item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status)">
+                                    <td v-if="item.type === 'Task'" data-toggle="tooltip" data-placement="left" title="Task"><i class="fa fa-cog" aria-hidden="true"></i></td>
+                                    <td v-if="item.type === 'Idea'" data-toggle="tooltip" data-placement="left" title="Idea"><i class="fa fa-info-circle" aria-hidden="true"></i></td>
+                                    <td><a :href="item.url">{{ item.title }}</a></td>
+                                    <td>{{ item.location }}</td>
+                                    <td>{{ item.assigned_user }}</td>
+                                    <td>{{ item.date_due }}</td>
+                                    <td>{{ item.status }}</td>
+                                    <td v-if="item.expand === 0" @click="item.expand = 1"><span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></td>
+                                    <td v-else-if="item.expand === 1" @click="item.expand = 0"><span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span></td>
+                                    <td v-else></td>
+
+                                    <!--<td v-if="item.type === 'Issue'">Critical Question</td>
+                                    <td v-if="item.type !== 'Issue'">{{ item.type }}</td>
+
+                                    <td>{{ item.date_raised }}</td>
+
+                                    <td>{{ item.raised_user }}</td>
+                                    -->
+
+                                </tr>
+
+                                <template v-for="subitem in items" v-if="subitem.type === 'Issue'">
+                                    <tr  v-if="isChildOfTask(item.id, subitem.id) && !item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status) && item.expand === 1">
+                                        <td v-if="subitem.type === 'Issue'" data-toggle="tooltip" data-placement="left" title="Critical Question"><i class="fa fa-question-circle" aria-hidden="true"></i></td>
                                         <td><a :href="subitem.url">{{ subitem.title }}</a></td>
                                         <td>{{ subitem.location }}</td>
                                         <td>{{ subitem.assigned_user }}</td>

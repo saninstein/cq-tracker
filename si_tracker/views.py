@@ -43,6 +43,11 @@ def items(req):
         _issues = [list(x.issue.filter(Q(visible='Public') | Q(raised_by=req.user)).values('id')) for x in tasks]
 
 
+    _tasks = [list(x['id'] for x in task) for task in _tasks]
+    _issues = [list(x['id'] for x in issue) for issue in _issues]
+
+
+
     issue_items = list(issues.values(*vals_issues))
     [
         x.update(type='Issue', url=reverse('tracker:item', args=['critical-question', x.get('id')]), tasks=y)
