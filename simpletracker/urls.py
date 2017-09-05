@@ -19,4 +19,5 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('si_tracker.urls', namespace='tracker')),
+    url(r'^', include('calendar_app.urls', namespace='calendar')),
 ]
