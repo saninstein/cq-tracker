@@ -9,7 +9,7 @@ class Location(models.Model):
     name = models.CharField(verbose_name="Location name", max_length=100)
     parent = models.ForeignKey("self", blank=True, null=True, verbose_name="Parent location",)
     owner = models.ForeignKey(User, blank=True, null=True, verbose_name="Owner", related_name='Location')
-    members = models.ManyToManyField(User, blank=True, null=True, verbose_name="Members")
+    members = models.ManyToManyField(User, blank=True, verbose_name="Members")
 
     def __str__(self):
         return self.name
@@ -20,7 +20,9 @@ class Location(models.Model):
 
 class Event(models.Model):
     name = models.CharField(verbose_name="Name", max_length=100)
-    date = models.DateTimeField(verbose_name="Date")
+    date = models.DateField(verbose_name="Date")
+    location = models.ForeignKey(Location, verbose_name="Location")
+
 
     def __str__(self):
         return self.name

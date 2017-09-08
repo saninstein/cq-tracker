@@ -20,6 +20,9 @@ def bootstraped_form(form):
     for key in form.fields:
         if key == 'is_staff':
             continue
+        if key == 'issue':
+            form.fields[key].widget.attrs['class'] = 'form-control selectpicker'
+            continue
         form.fields[key].widget.attrs['class'] = 'form-control'
 
 @user_passes_test(lambda user: user.is_authenticated, login_url=reverse_lazy('tracker:login'), redirect_field_name='')

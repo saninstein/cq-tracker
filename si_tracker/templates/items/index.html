@@ -16,20 +16,20 @@
     {% verbatim %}
         <div id="app">
 
-            <div class="panel panel-default">
+            <div class="panel panel-default gray">
 
 
-                <div class="panel-body">
+                <div class="panel-body white">
                     <ul class="nav nav-tabs">
                         <li role="presentation" @click="controls.panelIssue = true" :class="{ 'active': controls.panelIssue }"><a href="#">CQ`s</a></li>
                         <li role="presentation" @click="controls.panelIssue = false" :class="{ 'active': !controls.panelIssue }"><a href="#">Tasks</a></li>
+                        <li role="presentation"><a href="#">Reports</a></li>
                     </ul>
 
                     <div class="filter-panel">
-                        <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="controls.filter.self" @click="controls.filter.self = !controls.filter.self; filterChanged()">All items</a>
-                        <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="!controls.filter.self" @click="controls.filter.self = !controls.filter.self; filterChanged()">My items</a>
+                        <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="controls.filter.self" @click="controls.filter.self = !controls.filter.self; filterChanged()">All</a>
+                        <a href="javascript:void(0)" class="btn btn-primary" role="button" v-show="!controls.filter.self" @click="controls.filter.self = !controls.filter.self; filterChanged()">My</a>
 
-                        <a href="javascript:void(0)" class="btn btn-primary" role="button" @click="controls.panelIssue = !controls.panelIssue">Issue/Task</a>
                         <!--<a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Issue')">Critical Question <span v-if="controls.filter.issue" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
                         <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Task')">Task <span v-if="controls.filter.task"class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>
                         <a href="javascript:void(0)" class="btn btn-default" @click="filterBy('type', 'Idea')">Idea <span v-if="controls.filter.idea" class="glyphicon glyphicon-ok" aria-hidden="true"></span></a>-->
@@ -103,8 +103,8 @@
                                     <td>{{ item.assigned_user }}</td>
                                     <td>{{ item.date_due }}</td>
                                     <td>{{ item.status }}</td>
-                                    <td v-if="item.expand === 0" @click="item.expand = 1"><span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></td>
-                                    <td v-else-if="item.expand === 1" @click="item.expand = 0"><span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span></td>
+                                    <td v-if="item.expand_task === 0" @click="item.expand_task = 1"><span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></td>
+                                    <td v-else-if="item.expand_task === 1" @click="item.expand_task = 0"><span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span></td>
                                     <td v-else></td>
 
                                     <!--<td v-if="item.type === 'Issue'">Critical Question</td>
@@ -118,7 +118,7 @@
                                 </tr>
 
                                 <template v-for="subitem in items" v-if="subitem.type === 'Issue'">
-                                    <tr  v-if="isChildOfTask(item.id, subitem.id) && !item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status) && item.expand === 1">
+                                    <tr  v-if="isChildOfTask(item.id, subitem.id) && !item.hide && (controls.filter.self || item.raised_by === user) && filterStatus(item.status) && item.expand_task === 1">
                                         <td v-if="subitem.type === 'Issue'" data-toggle="tooltip" data-placement="left" title="Critical Question"><i class="fa fa-question-circle" aria-hidden="true"></i></td>
                                         <td><a :href="subitem.url">{{ subitem.title }}</a></td>
                                         <td>{{ subitem.location }}</td>

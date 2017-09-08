@@ -1,3 +1,7 @@
-<h2>{{ location.id }}</h2>
-<h3>{{ location.name }}</h3>
-<a href="{% url "calendar:location_delete" location.id %}">Delete</a>
+{% extends "base.html" %}
+{% block content %}
+    <h2>{{ location.id }}</h2>
+    <h3>{{ location.name }}</h3>
+    <a href="{% url "calendar:location_delete" location.id %}">Delete</a>
+    <a href="{% url "calendar:location_update" location.id %}">Update</a>
+{% endblock %}

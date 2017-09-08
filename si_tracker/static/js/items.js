@@ -124,7 +124,7 @@ var app = new Vue({
             var data;
             axios.get("/items")
                 .then(function (res) {
-                    console.log("Res: ", res.data);
+                    console.log("Items: ", res.data);
                     app.$data.items = res.data['items'].map(cookData);
                     app.$data.statuses = res.data['statuses'];
                     app.$data.user = res.data['user'];
@@ -152,12 +152,24 @@ function cookData(p) {
     p.hide = false;
     p.date_raised = dateConvert(p.date_raised);
     p.date_due = dateConvert(p.date_due);
-    if (true) {
+    if (hasChild(p)) {
         p.expand = 0;
+        p.expand_task = 0;
     } else {
         p.expand = -1;
+        p.expand_task = -1;
     }
     return p
 }
 
+function hasChild(p) {
+    if('tasks' in p)
+        if(p.tasks.length)
+            return true
+    if('issues' in p)
+        if(p.issues.length)
+            return true
 
+    return false
+
+}

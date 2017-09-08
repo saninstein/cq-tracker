@@ -36,7 +36,7 @@ class TaskForm(forms.ModelForm):
         self.fields['date_due'].input_formats = ['%d/%m/%Y', '%Y-%m-%d']
         self.fields['output'].widget.attrs['rows'] = 4
         self.fields['resources'].widget.attrs['rows'] = 4
-
+        self.fields['issue'].widget.attrs['data-live-search'] = "true"
 
 
 class UserCreateForm(UserCreationForm):

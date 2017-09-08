@@ -3,11 +3,17 @@
  */
 
 $(function () {
-    var def = dateConvert($('#id_date_due').val());
+    dateMagic('#id_date_due');
+    dateMagic('#id_date');
+});
+
+
+function dateMagic(item) {
+    var def = dateConvert($(item).val());
     $('#datetimepicker1').datetimepicker({
         format: 'DD/MM/YYYY'
     });
-    $('#id_date_due').val(def);
+    $(item).val(def);
 
     function dateConvert(dateStr) {
         if(!dateStr)
@@ -16,4 +22,4 @@ $(function () {
         dateAr.reverse();
         return dateAr.join('/');
     }
-});
+}

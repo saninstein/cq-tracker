@@ -1,5 +1,0 @@
-<form method="post" action="{% url "calendar:location_delete" location.id %}">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Delete">
-</form>
