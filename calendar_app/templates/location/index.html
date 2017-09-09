@@ -1,7 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>{{ location.id }}</h2>
     <h3>{{ location.name }}</h3>
-    <a href="{% url "calendar:location_delete" location.id %}">Delete</a>
-    <a href="{% url "calendar:location_update" location.id %}">Update</a>
+    <h5>Owner: {{ location.owner }} Parent: {% if location.parent %}<a href="{% url 'calendar:location_detail' location.parent %}">{{ location.parent.name }}</a>{% else %}--/--{% endif %}</h5>
+    <br>
+    <a class="btn btn-danger" href="{% url "calendar:location_delete" location.id %}">Delete</a>
+    <a class="btn btn-default" href="{% url "calendar:location_update" location.id %}">Update</a>
+    <br><br>
+    <ul class="list-group-item">
+        {% if location.members.count %}
+            <li class="list-group-item active text-center"><span class="text-center">Members</span></li>
+            {% for member in location.members.all %}
+                <li class="list-group-item">{{ member }}</li>
+            {% endfor %}
+        {% endif %}
+
+        {% if location.event_set.count %}
+            <li class="list-group-item active text-center"><span class="text-center">Events</span></li>
+            {% for event in location.event_set.all %}
+                <a href="{% url 'calendar:event_update' event.pk %}" class="list-group-item">{{ event.date }} <span class="pull-right">{{ event.name }}</span></a>
+            {% endfor %}
+        {% endif %}
+    </ul>
+
 {% endblock %}

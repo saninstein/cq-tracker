@@ -1,10 +1,5 @@
-/**
- * Created by Александр on 16.06.2017.
- */
-
 $(function () {
-    dateMagic('#id_date_due');
-    // dateMagic('#id_date');
+    dateMagic('#id_date');
     console.log("Magic!")
 });
 
@@ -23,4 +18,6 @@ function dateMagic(item) {
         dateAr.reverse();
         return dateAr.join('/');
     }
-}
+}/**
+ * Created by Александр on 09.09.2017.
+ */

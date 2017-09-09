@@ -39,6 +39,7 @@
                             <button type="button" @click="controls.filter.status='Closed'; filterChanged()" class="btn btn-default">Closed <span v-if="controls.filter.status === 'Closed'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
                             <button type="button" @click="controls.filter.status='All'; filterChanged()" class="btn btn-default">All <span v-if="controls.filter.status === 'All'" class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
                         </span>
+                        <span class="pull-right">Open: {{ open }} Close: {{ close }}</span>
                     </div>
                     <table class="table">
                         <thead>

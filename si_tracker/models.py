@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-import datetime
+from simple_history.models import HistoricalRecords
 
 class Item(models.Model):
 
@@ -55,6 +55,7 @@ class Item(models.Model):
     date_closed = models.DateField(auto_now=True, verbose_name="Date closed")
 
 
+
     def __str__(self):
         return self.title
 
@@ -63,7 +64,6 @@ class Issue(Item):
     type = "Critical Question"
     raised_by = models.ForeignKey(User, verbose_name="Raised by", related_name='Issue')
     assigned_to = models.ForeignKey(User, verbose_name="Assigned to")
-    # related_tasks = models.ManyToManyField(Task, related_name='issue', verbose_name="Related tasks")
 
     def get_absolute_url(self):
         return reverse('tracker:item', args=['critical-question', self.id])
@@ -78,3 +78,17 @@ class Task(Item):
 
     def get_absolute_url(self):
         return reverse('tracker:item', args=['task', self.id])
+
+
+class Log(models.Model):
+
+    what = models.CharField(max_length=100)
+    when = models.DateTimeField(auto_now_add=True)
+
+
+class LogTask(Log):
+    item = models.ForeignKey(Task)
+
+
+class LogIssue(Log):
+    item = models.ForeignKey(Issue)

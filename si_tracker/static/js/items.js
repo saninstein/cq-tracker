@@ -6,6 +6,8 @@ var app = new Vue({
         data: {
             items: "None",
             tasks: "None",
+            open: null,
+            close: null,
             user: null,
             statuses: null,
             controls:{
@@ -128,6 +130,9 @@ var app = new Vue({
                     app.$data.items = res.data['items'].map(cookData);
                     app.$data.statuses = res.data['statuses'];
                     app.$data.user = res.data['user'];
+                    app.$data.open = res.data['open_items'];
+                    app.$data.close = res.data['close_items'];
+
                 })
                 .catch(function (error) {
                     console.log(error)

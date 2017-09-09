@@ -22,7 +22,7 @@
                 <a class="navbar-brand" href="{% url 'tracker:general' %}">Critical Question Register</a>
                 {% if user.is_authenticated %}
                     <span class="dropdown">
-                        <a class="btn btn-primary navbar-btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Item <span class="caret"></span></a>
+                        <a class="btn navbar-btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Item <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="{% url "tracker:new_item" 'critical-question' %}">New Critical Question</a></li>
                             <li><a href="{% url "tracker:new_item" 'task' %}">New Task</a></li>
@@ -38,6 +38,7 @@
                 {% if user.is_authenticated %}
 
                     <div id="events_app">
+                        <a v-show="can_add" href="{% url 'calendar:events' %}" class="navbar-text">Events</a>
                         <a id="events_btn" href="#" @click="displayWidget()" class="navbar-text"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span><span class="caret" :class="{'caret-reversed': visible}"></span></a>
                         {% verbatim %}
                             <div id="events" v-if="visible" class="panel panel-default">

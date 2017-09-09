@@ -7,7 +7,7 @@
     <script src="{% static 'js/transition.js' %}"></script>
     <script src="{% static 'js/collapse.js' %}"></script>
     <script src="{% static 'datetimepicker/js/bootstrap-datetimepicker.min.js' %}"></script>
-    <script src="{% static 'js/datepick.js' %}"></script>
+    <script src="{% static 'js/dateMagic.js' %}"></script>
     <div class="panel panel-default my-panel-form">
         <div class="panel-heading text-center">Update Event</div>
         <div class="panel-body">
@@ -32,7 +32,9 @@
                     {% endfor %}
                     <p class="help-block">{{ field.help_text }}</p>
                 {% endfor %}
+                <hr>
                 <input class="btn btn-primary" type="submit" value="Update">
+                <a class="btn btn-danger" href="{% url 'calendar:event_delete' event.pk %}">Delete</a>
             </form>
         </div>
     </div>

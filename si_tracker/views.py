@@ -9,7 +9,21 @@ from django.db.models import Q
 from si_tracker.models import *
 from si_tracker.forms import *
 from operator import itemgetter
+from datetime import datetime
 from pprint import pprint
+
+
+def log(item, action, type):
+    if type == 'task':
+        log = LogTask()
+    else:
+        log = LogIssue()
+    log.what = action
+    log.save()
+
+
+
+
 
 def user_context(req):
     return {
@@ -72,7 +86,15 @@ def items(req):
         'open': [x[0] for x in Item.open_statuses],
         'close': [x[0] for x in Item.closed_statuses]
     }
-    return JsonResponse({'items': items, 'user': req.user.id, 'statuses': statuses})
+
+    current_month = datetime.today().month
+    return JsonResponse({
+        'items': items,
+        'user': req.user.id,
+        'statuses': statuses,
+        'open_items': sum(Item.objects.filter(date_raised__month=current_month, status__in=statuses['open']).count() for Item in [Issue, Task]),
+        'close_items': sum(Item.objects.filter(date_raised__month=current_month, status__in=statuses['close']).count() for Item in [Issue, Task])
+    })
 
 def update_user_info(items):
     for item in items:

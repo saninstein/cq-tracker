@@ -4,6 +4,7 @@ var events = new Vue({
     el: '#events_app',
     data: {
         events: null,
+        can_add: false,
         visible: false
     },
 
@@ -24,8 +25,9 @@ var events = new Vue({
                     p.date = dateConvert(p.date);
                     return p
                 });
-
-                console.log(events.$data.events)
+                events.$data.can_add = res.data['can_add_events'];
+                if(!events.$data.events.length)
+                    events.$data.events = [{'name': 'No events', 'date': ''}]
             })
             .catch(function (e) {
                 console.log("Error:", e);

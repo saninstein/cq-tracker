@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Q
 from .models import Location, Event
 from django.contrib.auth.models import User
 
@@ -13,7 +14,10 @@ class LocationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(LocationForm, self).__init__(*args, **kwargs)
         bootstraped_form(self)
-        self.fields['members'].queryset = User.objects.filter(location=None)
+
+        if 'instance' not in kwargs:
+            self.fields['members'].queryset = User.objects.filter(location=None)
+
         self.fields['owner'].queryset = User.objects.filter(location=None)
         # Styles
         self.fields['members'].widget.attrs['class'] += " selectpicker"
@@ -32,17 +36,12 @@ class EventForm(forms.ModelForm):
     def __init__(self, user=None, *args, **kwargs):
 
         # !!!
-        self.owner = kwargs.pop('owner', None)
+        self.locations = kwargs.pop('locations', None)
 
         super(EventForm, self).__init__(*args, **kwargs)
         bootstraped_form(self)
-        if not self.owner.is_staff:
-            locations = Location.objects.filter(owner=self.owner)
-            self.initial['location'] = locations[0]
-            # self.fields['location'].widget.attrs['readonly'] = True
-            self.fields['location'].queryset = locations
-
-
+        if self.locations:
+            self.fields['location'].queryset = self.locations
 
 
 def bootstraped_form(form):
