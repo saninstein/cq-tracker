@@ -40,7 +40,7 @@ class Item(models.Model):
 
     type = "Item"
     title = models.CharField(max_length=150, verbose_name="Title")
-    date_raised = models.DateField(auto_now_add=True, verbose_name="Date raised")
+    date_raised = models.DateTimeField(auto_now_add=True, verbose_name="Date raised")
     date_due = models.DateField(null=True, blank=True, verbose_name="Date due")
     description = models.TextField(verbose_name="Context", max_length=5000)
     status = models.CharField(max_length=20, choices=statuses, default=statuses[0], verbose_name="Status")

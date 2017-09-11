@@ -39,8 +39,10 @@
     <ul class="list-group">
         <li class="list-group-item active text-center">Log</li>
         {% for log in item.logissue_set.all %}
-            <li class="list-group-item">{{ log.when }} {{ log.what }} By {{ log.who }}</li>
+            <li class="list-group-item">{{ log.when }} <span class="pull-right">{{ log.what }} By {{ log.who }}</span></li>
         {% endfor %}
+            <li class="list-group-item">{{ item.date_raised }} <span class="pull-right">Item created By {{ item.raised_by.username }}</span></li>
+
     </ul>
 
 

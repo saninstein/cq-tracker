@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if message.type_item == message.ISSUE %}
+        <h3><a href="{{ message.item_issue.get_absolute_url }}">{{ message.item_issue.title }}</a></h3>
+    {% else %}
+        <h3><a href="{{ message.item_task.get_absolute_url }}">{{ message.item_task.title }}</a></h3>
+    {% endif %}
+    <br>
+    <h4>{{ message.when }}</h4>
+    <hr>
+    <p>{{ message.description }}</p>
+{% endblock %}

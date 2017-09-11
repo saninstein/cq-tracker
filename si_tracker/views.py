@@ -78,7 +78,6 @@ def items(req):
         for x, y in zip(task_items, _issues)
     ]
 
-    print(issue_items + task_items)
     items = sorted(issue_items + task_items, key=itemgetter('date_raised'), reverse=True)
 
     update_user_info(items)

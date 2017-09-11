@@ -36,9 +36,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'simple_history',
     'si_tracker.apps.SiTrackerConfig',
     'calendar_app.apps.CalendarAppConfig',
+    'notify.apps.NotifyConfig'
 ]
 
 MIDDLEWARE = [
@@ -66,6 +66,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'notify.context_processors.notifications',
             ],
         },
     },
@@ -125,6 +126,7 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 
 DATE_FORMAT = 'd/m/Y'
+DATETIME_FORMAT = 'm/d/Y H:i'
 
 DATETIME_INPUT_FORMATS = [
     '%d/%m/%Y'
