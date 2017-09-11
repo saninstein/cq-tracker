@@ -82,8 +82,14 @@ class Task(Item):
 
 class Log(models.Model):
 
+    class Meta:
+        abstract = True
+        ordering = ['-when']
+
     what = models.CharField(max_length=100)
     when = models.DateTimeField(auto_now_add=True)
+    who = models.ForeignKey(User)
+
 
 
 class LogTask(Log):

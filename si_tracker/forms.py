@@ -20,6 +20,22 @@ class IssueForm(forms.ModelForm):
         self.fields['output'].widget.attrs['rows'] = 4
         self.fields['resources'].widget.attrs['rows'] = 4
 
+    def save(self, user=None, item=None, commit=True):
+        if user and item:
+            issue = super(IssueForm, self).save(commit=False)
+            try:
+                i = Issue.objects.get(id=issue.id)
+                if(i.status != issue.status):
+                    log = LogIssue()
+                    log.what = "Status \"{}\" changed to \"{}\"".format(i.status, issue.status)
+                    log.who = user
+                    log.item = item
+                    log.save()
+                    print('save')
+            except Issue.DoesNotExist:
+                pass
+        return super(IssueForm, self).save(commit)
+
 
 class TaskForm(forms.ModelForm):
 
@@ -37,6 +53,22 @@ class TaskForm(forms.ModelForm):
         self.fields['output'].widget.attrs['rows'] = 4
         self.fields['resources'].widget.attrs['rows'] = 4
         self.fields['issue'].widget.attrs['data-live-search'] = "true"
+
+    def save(self, user=None, item=None, commit=True):
+        if user and item:
+            task = super(TaskForm, self).save(commit=False)
+            try:
+                i = Task.objects.get(id=task.id)
+                if(i.status != task.status):
+                    log = LogTask()
+                    log.what = "Status \"{}\" changed to \"{}\"".format(i.status, task.status)
+                    log.who = user
+                    log.item = item
+                    log.save()
+                    print('save')
+            except Issue.DoesNotExist:
+                pass
+        return super(TaskForm, self).save(commit)
 
 
 class UserCreateForm(UserCreationForm):

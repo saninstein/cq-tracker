@@ -29,6 +29,13 @@
     <p>{{ item.addressed }}</p>
     <hr>
 
+    <ul class="list-group">
+        <li class="list-group-item active text-center">Log</li>
+        {% for log in item.logtask_set.all %}
+            <li class="list-group-item">{{ log.when }} {{ log.what }} By {{ log.who }}</li>
+        {% endfor %}
+    </ul>
+
     <a class="btn btn-default" href="{% url 'tracker:update_item' 'task' item.id %}">Edit</a>
     {% if user.is_staff %}<a class="btn btn-danger" href="{% url 'tracker:delete_item' 'task' item.id %}">Delete</a>{% endif %}
     <h1></h1>

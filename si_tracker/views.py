@@ -13,7 +13,7 @@ from datetime import datetime
 from pprint import pprint
 
 
-def log(item, action, type):
+def log(item, action, type=None):
     if type == 'task':
         log = LogTask()
     else:
@@ -158,7 +158,7 @@ def item_create_update(req, type='', item=''):
 
     if item:
         _item = get_object_or_404(Item, id=item)
-        if _item.status.startswith('Closed') and not req.user.is_staff:
+        if _item.status in [s[0] for s in Item.closed_statuses ] and not req.user.is_staff:
             return redirect(_item.get_absolute_url())
         args['item'] = _item.id
     else:
@@ -166,11 +166,12 @@ def item_create_update(req, type='', item=''):
         args['item'] = None
 
     if req.method == 'POST':
+        inst = _item
         form = Form(req.POST, instance=_item)
         if form.is_valid():
-            _item = form.save(commit=False)
+            item = form.save(user=req.user, item=inst, commit=False)
             form.save()
-            return redirect(_item.get_absolute_url())
+            return redirect(item.get_absolute_url())
         else:
             args['form'] = form
 
