@@ -1,8 +1,9 @@
 from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import Message
+from .models import Message, MessageProfile
 
 
 class MessageViewMixin(LoginRequiredMixin):
@@ -22,7 +23,6 @@ class MessageUserPassetTestMixin(UserPassesTestMixin):
     raise_exception = PermissionDenied
 
     def test_func(self):
-        print("HELLO")
         self.object = self.get_object()
         return self.object.user == self.request.user
 
@@ -34,5 +34,20 @@ class MessageDetailView(MessageUserPassetTestMixin, MessageViewMixin, DetailView
         self.object.read = True
         self.object.save()
         return super(MessageDetailView, self).get_context_data(**kwargs)
+
+
+class MessageProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+
+    model = MessageProfile
+    context_object_name = 'messageprofile'
+    fields = ('allow_email_events',)
+    template_name = "messageprofile_form/index.html"
+    success_url = reverse_lazy('tracker:users')
+
+    raise_exception = PermissionDenied
+
+    def test_func(self):
+        return self.request.user.is_staff
+
 
 

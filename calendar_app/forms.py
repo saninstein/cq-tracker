@@ -15,15 +15,22 @@ class LocationForm(forms.ModelForm):
         super(LocationForm, self).__init__(*args, **kwargs)
         bootstraped_form(self)
 
-        if 'instance' not in kwargs:
-            self.fields['members'].queryset = User.objects.filter(location=None)
-
-        self.fields['owner'].queryset = User.objects.filter(location=None)
+        print(kwargs)
+        if kwargs.get('instance', None) is None:
+            self.fields['owner'].queryset = User.objects.filter(Location=None, Location_member=None)
+            self.fields['members'].queryset = User.objects.filter(Location=None, Location_member=None)
         # Styles
         self.fields['members'].widget.attrs['class'] += " selectpicker"
         self.fields['owner'].widget.attrs['class'] += " selectpicker"
         self.fields['owner'].widget.attrs['data-live-search'] = "true"
         self.fields['members'].widget.attrs['data-live-search'] = "true"
+
+    def clean(self):
+        super(LocationForm, self).clean()
+        cleaned_data = self.cleaned_data
+        print(cleaned_data.get('owner', None), cleaned_data.get('members', (None, )))
+        if cleaned_data['owner'] in cleaned_data['members']:
+            self.add_error('owner', "User owner in members!")
 
 
 
@@ -40,6 +47,7 @@ class EventForm(forms.ModelForm):
 
         super(EventForm, self).__init__(*args, **kwargs)
         bootstraped_form(self)
+        self.fields['date'].input_formats = ['%d/%m/%Y', '%Y-%m-%d']
         if self.locations:
             self.fields['location'].queryset = self.locations
 

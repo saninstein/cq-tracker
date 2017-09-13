@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from si_tracker.models import *
+from si_tracker.utils import message_create, message_about_task
 
 
 
@@ -31,7 +32,9 @@ class IssueForm(forms.ModelForm):
                     log.who = user
                     log.item = item
                     log.save()
-                    print('save')
+                    message_create(log.what, item, item.raised_by)
+                    message_create(log.what, item, item.assigned_to)
+                    message_create(log.what, item, item.location.owner)
             except Issue.DoesNotExist:
                 pass
         return super(IssueForm, self).save(commit)
@@ -65,7 +68,10 @@ class TaskForm(forms.ModelForm):
                     log.who = user
                     log.item = item
                     log.save()
-                    print('save')
+                    message_create(log.what, item, item.raised_by)
+                    message_create(log.what, item, item.assigned_to)
+                    message_create(log.what, item, item.location.owner)
+                    message_about_task("Associated tasks: {}".format(log.what), item)
             except Issue.DoesNotExist:
                 pass
         return super(TaskForm, self).save(commit)

@@ -1,8 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
-    <form method="post" action="{% url "calendar:location_delete" location.id %}">
-        {% csrf_token %}
-        {{ form }}
-        <input class="btn btn-danger" type="submit" value="Delete">
-    </form>
+    <div class="panel panel-danger">
+        <div class="panel-heading">
+            <h4 class="text-center">Delete {{ location.name }}?</h4>
+
+        </div>
+        <div class="panel-body">
+
+            <form class="form" method="post" action="{% url "calendar:location_delete" location.id %}">
+                {% csrf_token %}
+                {{ form }}
+                <input class="form-control btn btn-danger" type="submit" value="Delete">
+            </form>
+        </div>
+    </div>
+
 {% endblock %}

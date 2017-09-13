@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+from huey import RedisHuey
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,6 +23,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'ut1jq@$p+bo-zu)i-8ioh#9a_q6fy-%n$9%v1sx!387s3!txfe'
 
+
+SITE_URL = 'www.example.com' # Need to pass in email messages
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST_USER = 'info@evroswit.com.ua'
+EMAIL_HOST_PASSWORD = '#15UTjxEYgyy'
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -38,7 +48,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'si_tracker.apps.SiTrackerConfig',
     'calendar_app.apps.CalendarAppConfig',
-    'notify.apps.NotifyConfig'
+    'notify.apps.NotifyConfig',
+    'huey.contrib.djhuey'
 ]
 
 MIDDLEWARE = [
@@ -49,7 +60,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'simpletracker.urls'
@@ -85,6 +95,7 @@ if DEBUG:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
+
 else:
     DATABASES = {
       'default': {
@@ -97,8 +108,9 @@ else:
       }
     }
 
-
-
+# HUEY = RedisHuey('cq_tracker')
+from huey.contrib.sqlitedb import SqliteHuey
+HUEY = SqliteHuey('cq_tracker', filename=os.path.join(BASE_DIR, 'db.sqlite'))
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
@@ -126,7 +138,7 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 
 DATE_FORMAT = 'd/m/Y'
-DATETIME_FORMAT = 'm/d/Y H:i'
+DATETIME_FORMAT = 'd/m/Y H:i'
 
 DATETIME_INPUT_FORMATS = [
     '%d/%m/%Y'
@@ -151,6 +163,7 @@ USE_L10N = False
 USE_TZ = True
 
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
@@ -158,6 +171,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 LOGIN_URL = '/login/'
+
+
 
 
 

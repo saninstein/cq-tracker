@@ -1,4 +1,5 @@
 from django.shortcuts import render, render_to_response, get_object_or_404, redirect
+from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm
@@ -10,7 +11,7 @@ from si_tracker.models import *
 from si_tracker.forms import *
 from operator import itemgetter
 from datetime import datetime
-from pprint import pprint
+from si_tracker.utils import message_create, message_about_task
 
 
 def log(item, action, type=None):
@@ -32,12 +33,22 @@ def user_context(req):
 
 def bootstraped_form(form):
     for key in form.fields:
-        if key == 'is_staff':
+        if key == 'is_staff' or key == 'allow_mail_send':
             continue
         if key == 'issue':
             form.fields[key].widget.attrs['class'] = 'form-control selectpicker'
             continue
         form.fields[key].widget.attrs['class'] = 'form-control'
+
+    if 'location' in form.fields:
+        form.fields['location'].widget.attrs['class'] += " selectpicker"
+        form.fields['location'].widget.attrs['data-live-search'] = "true"
+    if 'raised_by' in form.fields:
+        form.fields['raised_by'].widget.attrs['class'] += " selectpicker"
+        form.fields['raised_by'].widget.attrs['data-live-search'] = "true"
+    if 'assigned_to' in form.fields:
+        form.fields['assigned_to'].widget.attrs['class'] += " selectpicker"
+        form.fields['assigned_to'].widget.attrs['data-live-search'] = "true"
 
 @user_passes_test(lambda user: user.is_authenticated, login_url=reverse_lazy('tracker:login'), redirect_field_name='')
 def general(req):
@@ -45,8 +56,8 @@ def general(req):
 
 @user_passes_test(lambda user: user.is_authenticated, login_url=reverse_lazy('tracker:login'), redirect_field_name='')
 def items(req):
-    vals_tasks = ('id', 'type', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location')
-    vals_issues = ('id', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location')
+    vals_tasks = ('id', 'type', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location__name')
+    vals_issues = ('id', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location__name')
     if req.user.is_staff:
         issues = Issue.objects.all()
         tasks = Task.objects.all()
@@ -85,6 +96,7 @@ def items(req):
         'open': [x[0] for x in Item.open_statuses],
         'close': [x[0] for x in Item.closed_statuses]
     }
+
 
     current_month = datetime.today().month
     return JsonResponse({
@@ -170,6 +182,10 @@ def item_create_update(req, type='', item=''):
         if form.is_valid():
             item = form.save(user=req.user, item=inst, commit=False)
             form.save()
+            if _item is None:
+                message_create("Item created", item, item.location.owner)
+                if item.type != Issue.type:
+                    message_about_task("Associated tasks create", item)
             return redirect(item.get_absolute_url())
         else:
             args['form'] = form

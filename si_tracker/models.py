@@ -46,7 +46,7 @@ class Item(models.Model):
     status = models.CharField(max_length=20, choices=statuses, default=statuses[0], verbose_name="Status")
     visible = models.CharField(max_length=10, default=visibility[1], choices=visibility, verbose_name="Visible")
     actions_taken = models.TextField(max_length=5000, blank=True, default="", verbose_name="Comments")
-    location = models.CharField(max_length=20, blank=True, choices=locations, verbose_name="Location")
+    location = models.ForeignKey('calendar_app.Location' ,verbose_name="Location")
 
     purpose = models.CharField(max_length=500, blank=True, default="", verbose_name="Purpose")
     output = models.TextField(verbose_name="Output", blank=True, default="", max_length=2000)

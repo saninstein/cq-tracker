@@ -1,7 +1,7 @@
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.urls import reverse_lazy
 from django.views.generic import *
 from django.views.generic.edit import ModelFormMixin
@@ -104,8 +104,10 @@ class EventDeleteView(EventViewMixin, DeleteView):
 class EventsApiView(LoginRequiredMixin, View):
 
     def get(self, req):
-        location = get_object_or_404(Location, Q(members__id=req.user.id) | Q(owner__id=req.user.id))
-
+        location = Location.objects.filter(Q(members__id=req.user.id) | Q(owner__id=req.user.id))
+        if not location:
+            raise Http404
+        location = location[0]
         return JsonResponse({
             'events': list(Event.objects.filter(location=location).values('id', 'date', 'name')),
             'can_add_events': location.owner == req.user

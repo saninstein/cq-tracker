@@ -33,7 +33,6 @@
         {% for task in tasks %}
             <li class="list-group-item"><a href="{{ task.get_absolute_url }}">{{ task.title }}<span class="label label-default pull-right">{{ task.visible }}</span><span class="label label-info pull-right"> {{ task.status }}</span></a></li>
         {% endfor %}
-
     </ul>
 
     <ul class="list-group">
