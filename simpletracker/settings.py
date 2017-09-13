@@ -110,7 +110,7 @@ else:
 
 # HUEY = RedisHuey('cq_tracker')
 from huey.contrib.sqlitedb import SqliteHuey
-HUEY = SqliteHuey('cq_tracker', filename=os.path.join(BASE_DIR, 'db.sqlite'))
+HUEY = SqliteHuey('cq_tracker')
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
