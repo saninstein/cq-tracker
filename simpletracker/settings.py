@@ -27,8 +27,8 @@ SECRET_KEY = 'ut1jq@$p+bo-zu)i-8ioh#9a_q6fy-%n$9%v1sx!387s3!txfe'
 SITE_URL = 'www.example.com' # Need to pass in email messages
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST_USER = 'info@evroswit.com.ua'
-EMAIL_HOST_PASSWORD = '#15UTjxEYgyy'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
 EMAIL_HOST = 'smtp.mail.ru'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
