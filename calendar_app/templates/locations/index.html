@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+    <a class="btn btn-primary" href="{% url 'calendar:location_create' %}">New Location <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a>
+
+    <table class="table">
+         <thead>
+             <tr>
+                 <th>id</th>
+                 <th>Name</th>
+                 <th>Owner</th>
+                 <th>Parent</th>
+             </tr>
+         </thead>
+         <tbody>
+            {% for item in locations %}
+                 <tr>
+                     <th>{{ item.id }}</th>
+                     <td><a href="{% url 'calendar:location_detail' item.id %}">{{ item.name }}</a></td>
+                     <td>{% if item.owner.username %}{{ item.owner.username }}{% else %}--/--{% endif %}</td>
+                     <td>{% if item.parent.name %}{{ item.parent.name }}{% else %}--/--{% endif %}</td>
+                 </tr>
+            {% endfor %}
+         </tbody>
+    </table>
+{% endblock %}

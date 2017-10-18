@@ -12,3 +12,50 @@
 .space {
     width: 10px;
 }
+
+.bold-text td{
+    font-weight: bold !important;
+}
+
+.fa-question-circle {
+    color: #5cb85c;
+}
+
+.fa-info-circle {
+    color: #eea236;
+}
+
+.filter-panel {
+    margin-top: 2%;
+}
+
+.gray {
+    background-color: rgba(207, 207, 207, 0.6);
+}
+
+.white {
+    background-color: white;
+}
+
+#calendar {
+    display: none;
+    position: absolute;
+    top:52.5px;
+    left: 35%;
+}
+
+#events {
+    min-width: 20%;
+    position: absolute;
+    top: 52px;
+    left: 20%;
+    z-index: 20;
+}
+
+.caret-reversed{
+  -ms-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+

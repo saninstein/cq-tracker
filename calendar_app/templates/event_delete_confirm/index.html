@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="panel panel-danger">
+        <div class="panel-heading">
+            <h4 class="text-center">Delete {{ event.date }} {{ event.name }} from {{ event.location.name }}?</h4>
+
+        </div>
+        <div class="panel-body">
+
+            <form class="form" method="post" action="{% url "calendar:event_delete" event.id %}">
+                {% csrf_token %}
+                {{ form }}
+                <input class="form-control btn btn-danger" type="submit" value="Delete">
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

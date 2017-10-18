@@ -1,0 +1,4 @@
+django==1.11.5
+redis==2.10.6
+peewee==2.10.1
+huey==1.4.1

@@ -10,7 +10,7 @@
     <script src="{% static 'js/datepick.js' %}"></script>
 
     <div class="panel panel-default my-panel-form">
-        <div class="panel-heading text-center">{% if item %}Update{% else %}New{% endif %} {{ type }}</div>
+        <div class="panel-heading text-center">{% if item %}Update{% else %}New{% endif %} {% if type == 'critical-question' %} Critical Question {% else %} {{ type }} {% endif %}</div>
         <div class="panel-body">
 
             <form style="" class="" action="
@@ -40,7 +40,7 @@
                     {% endfor %}
                     <p class="help-block">{{ field.help_text }}</p>
                 {% endfor %}
-            <br>
+            <hr>
                 <input class="btn btn-primary" type="submit" value="Save">
             </form>
         </div>

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="panel panel-default my-panel-form">
+        <div class="panel-heading text-center">Create Location</div>
+        <div class="panel-body">
+            <form method="post" action="{% url "calendar:location_create" %}">
+                {% csrf_token %}
+                {{ form }}
+                <hr>
+                <input class="btn btn-primary" type="submit" value="Create">
+            </form>
+        </div>
+    </div>
+{% endblock %}
+

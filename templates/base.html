@@ -1,13 +1,17 @@
-{% load staticfiles %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Simple Issue Tracker</title>
+    <title>Critical Question Register</title>
     <link rel="shortcut icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-select.min.css' %}">
     <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/vue.js' %}"></script>
+    <script src="{% static 'js/axios.min.js' %}"></script>
     <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "js/bootstrap-select.min.js" %}"></script>
     <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 <body>
@@ -15,34 +19,55 @@
     <nav class="navbar navbar-inverse">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a class="navbar-brand" href="{% url 'tracker:general' %}">Simple Issue Tracker</a>
+                <a class="navbar-brand" href="{% url 'tracker:general' %}">Critical Question Register</a>
                 {% if user.is_authenticated %}
                     <span class="dropdown">
-                        <a class="btn btn-primary navbar-btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Item <span class="caret"></span></a>
+                        <a class="btn navbar-btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Item <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url "tracker:new_item" 'issue' %}">New Issue</a></li>
+                            <li><a href="{% url "tracker:new_item" 'critical-question' %}">New Critical Question</a></li>
                             <li><a href="{% url "tracker:new_item" 'task' %}">New Task</a></li>
                         </ul>
                     </span>
                 {% endif %}
-                {% if user.is_staff %}<a class="btn btn-success navbar-btn" href="{% url 'tracker:users' %}">Users</a>{% endif %}
+                {% if user.is_staff %}
+                    <a class="btn btn-success navbar-btn" href="{% url 'tracker:users' %}">Users</a>
+                    <a class="btn btn-success navbar-btn" href="{% url 'calendar:locations' %}">Locations</a>
+                {% endif %}
             </div>
             <div class="collapse navbar-collapse">
                 {% if user.is_authenticated %}
+
+                    <div id="events_app">
+                        <a v-show="can_add" href="{% url 'calendar:events' %}" class="navbar-text">Events</a>
+                        <a id="events_btn" href="#" @click="displayWidget()" class="navbar-text"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span><span class="caret" :class="{'caret-reversed': visible}"></span></a>
+                        {% verbatim %}
+                            <div id="events" v-if="visible" class="panel panel-default">
+                                <table class="table">
+                                    <tbody>
+                                        <tr v-for="event in events">
+                                            <td>{{ event.date }}</td>
+                                            <td>{{ event.name }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endverbatim %}
+                    </div>
+
+    <script src="{% static "js/events.js" %}"></script>
                     <p class="navbar-text navbar-right">Hello, <a href="{% url 'tracker:change_password' user.id %}">{{ user }}</a> <a class="btn-link" href="{% url 'tracker:logout' %}">Logout</a></p>
                 {% endif %}
 
+                {% if user.is_authenticated  %}
+                    <a href="{% url "notify:messages" %}" class="navbar-text navbar-right"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>{% if notifications %} <span class="text-danger">{{ notifications }}</span>{% endif %}</a>
+                {% endif %}
 
             </div>
         </div>
     </nav>
-
-
-
+    
 
     <div class="container">
-
-
         {% block content %}{% endblock %}
     </div>
 

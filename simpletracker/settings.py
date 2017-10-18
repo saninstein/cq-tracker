@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+from huey import RedisHuey
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,6 +23,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'ut1jq@$p+bo-zu)i-8ioh#9a_q6fy-%n$9%v1sx!387s3!txfe'
 
+
+SITE_URL = 'www.example.com' # Need to pass in email messages
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -30,13 +40,16 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    # 'django.contrib.admin',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'si_tracker.apps.SiTrackerConfig',
+    'calendar_app.apps.CalendarAppConfig',
+    'notify.apps.NotifyConfig',
+    'huey.contrib.djhuey'
 ]
 
 MIDDLEWARE = [
@@ -63,6 +76,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'notify.context_processors.notifications',
             ],
         },
     },
@@ -74,14 +88,29 @@ WSGI_APPLICATION = 'simpletracker.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
 
+else:
+    DATABASES = {
+      'default': {
+          'ENGINE': 'django.db.backends.postgresql_psycopg2',
+          'NAME': 'db',
+          'HOST': '/opt/bitnami/postgresql',
+          'PORT': '5432',
+          'USER': 'user_tracker',
+          'PASSWORD': 'pass1234'
+      }
+    }
 
+# HUEY = RedisHuey('cq_tracker')
+from huey.contrib.sqlitedb import SqliteHuey
+HUEY = SqliteHuey('cq_tracker')
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
@@ -109,6 +138,7 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 
 DATE_FORMAT = 'd/m/Y'
+DATETIME_FORMAT = 'd/m/Y H:i'
 
 DATETIME_INPUT_FORMATS = [
     '%d/%m/%Y'
@@ -133,11 +163,16 @@ USE_L10N = False
 USE_TZ = True
 
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+LOGIN_URL = '/login/'
+
+
 
 
 

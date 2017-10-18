@@ -1,4 +1,5 @@
 from django.shortcuts import render, render_to_response, get_object_or_404, redirect
+from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm
@@ -9,6 +10,21 @@ from django.db.models import Q
 from si_tracker.models import *
 from si_tracker.forms import *
 from operator import itemgetter
+from datetime import datetime
+from si_tracker.utils import message_create, message_about_task
+
+
+def log(item, action, type=None):
+    if type == 'task':
+        log = LogTask()
+    else:
+        log = LogIssue()
+    log.what = action
+    log.save()
+
+
+
+
 
 def user_context(req):
     return {
@@ -17,9 +33,22 @@ def user_context(req):
 
 def bootstraped_form(form):
     for key in form.fields:
-        if key == 'is_staff':
+        if key == 'is_staff' or key == 'allow_mail_send':
+            continue
+        if key == 'issue':
+            form.fields[key].widget.attrs['class'] = 'form-control selectpicker'
             continue
         form.fields[key].widget.attrs['class'] = 'form-control'
+
+    if 'location' in form.fields:
+        form.fields['location'].widget.attrs['class'] += " selectpicker"
+        form.fields['location'].widget.attrs['data-live-search'] = "true"
+    if 'raised_by' in form.fields:
+        form.fields['raised_by'].widget.attrs['class'] += " selectpicker"
+        form.fields['raised_by'].widget.attrs['data-live-search'] = "true"
+    if 'assigned_to' in form.fields:
+        form.fields['assigned_to'].widget.attrs['class'] += " selectpicker"
+        form.fields['assigned_to'].widget.attrs['data-live-search'] = "true"
 
 @user_passes_test(lambda user: user.is_authenticated, login_url=reverse_lazy('tracker:login'), redirect_field_name='')
 def general(req):
@@ -27,30 +56,64 @@ def general(req):
 
 @user_passes_test(lambda user: user.is_authenticated, login_url=reverse_lazy('tracker:login'), redirect_field_name='')
 def items(req):
+    vals_tasks = ('id', 'type', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location__name')
+    vals_issues = ('id', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location__name')
     if req.user.is_staff:
         issues = Issue.objects.all()
         tasks = Task.objects.all()
+        _tasks = [list(x.task_set.all().values('id')) for x in issues]
+        _issues = [list(x.issue.all().values('id')) for x in tasks]
+
     else:
-        issues = Issue.objects.filter(Q(visible='Public') | Q(raised_by=req.user))
         tasks = Task.objects.filter(Q(visible='Public') | Q(raised_by=req.user))
+        issues = Issue.objects.filter(Q(visible='Public') | Q(raised_by=req.user))
+        _tasks = [list(x.task_set.filter(Q(visible='Public') | Q(raised_by=req.user)).values('id')) for x in issues]
+        _issues = [list(x.issue.filter(Q(visible='Public') | Q(raised_by=req.user)).values('id')) for x in tasks]
 
-    issue_items = list(issues.values('id', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location'))
-    [x.update(type='Issue', url=reverse('tracker:item', args=['issue', x.get('id')])) for x in issue_items]
+
+    _tasks = [list(x['id'] for x in task) for task in _tasks]
+    _issues = [list(x['id'] for x in issue) for issue in _issues]
 
 
-    task_items = list(tasks.values('id', 'type', 'title', 'date_raised', 'status', 'raised_by', 'date_due', 'assigned_to', 'location'))
-    [x.update(url=reverse('tracker:item', args=['task', x.get('id')])) for x in task_items]
 
-    items = sorted(task_items + issue_items, key=itemgetter('date_raised'), reverse=True)
+    issue_items = list(issues.values(*vals_issues))
+    [
+        x.update(type='Issue', url=reverse('tracker:item', args=['critical-question', x.get('id')]), tasks=y)
+        for x, y in zip(issue_items, _tasks)
+    ]
 
+
+    task_items = list(tasks.values(*vals_tasks))
+    [
+        x.update(url=reverse('tracker:item', args=['task', x.get('id')]), issues=y)
+        for x, y in zip(task_items, _issues)
+    ]
+
+    items = sorted(issue_items + task_items, key=itemgetter('date_raised'), reverse=True)
+
+    update_user_info(items)
+    statuses = {
+        'open': [x[0] for x in Item.open_statuses],
+        'close': [x[0] for x in Item.closed_statuses]
+    }
+
+
+    current_month = datetime.today().month
+    return JsonResponse({
+        'items': items,
+        'user': req.user.id,
+        'statuses': statuses,
+        'open_items': sum(Item.objects.filter(date_raised__month=current_month, status__in=statuses['open']).count() for Item in [Issue, Task]),
+        'close_items': sum(Item.objects.filter(date_raised__month=current_month, status__in=statuses['close']).count() for Item in [Issue, Task])
+    })
+
+def update_user_info(items):
     for item in items:
         assigned_user = get_user(item.get('assigned_to', None))
         raised_user = get_user(item.get('raised_by', None))
         assigned_user = assigned_user.username if assigned_user else None
         raised_user = raised_user.username if raised_user else None
         item.update(assigned_user=assigned_user, raised_user=raised_user)
-    return JsonResponse({'results': items, 'user': req.user.id})
-
 
 def get_user(id):
     try:
@@ -63,13 +126,13 @@ def get_issue(args, issue):
     args['tasks'] = issue.task_set.all()
 
 def get_task(args, task):
-    args['issue'] = task.issue
+    args['issues'] = task.issue.all()
 
 
 @user_passes_test(lambda user: user.is_authenticated, login_url=reverse_lazy('tracker:login'), redirect_field_name='')
 def item(req, type='', item=''):
     args = dict()
-    if type.lower() == 'issue':
+    if type.lower() == 'critical-question':
         template = 'issue/index.html'
         Item = Issue
         get_item = get_issue
@@ -95,7 +158,7 @@ def item(req, type='', item=''):
 def item_create_update(req, type='', item=''):
     args = dict()
     args['type'] = type
-    if type == 'issue':
+    if type == 'critical-question':
         Item = Issue
         Form = IssueForm
     elif type == 'task':
@@ -106,7 +169,7 @@ def item_create_update(req, type='', item=''):
 
     if item:
         _item = get_object_or_404(Item, id=item)
-        if _item.status.startswith('Closed') and not req.user.is_staff:
+        if _item.status in [s[0] for s in Item.closed_statuses ] and not req.user.is_staff:
             return redirect(_item.get_absolute_url())
         args['item'] = _item.id
     else:
@@ -114,11 +177,16 @@ def item_create_update(req, type='', item=''):
         args['item'] = None
 
     if req.method == 'POST':
+        inst = _item
         form = Form(req.POST, instance=_item)
         if form.is_valid():
-            _item = form.save(commit=False)
+            item = form.save(user=req.user, item=inst, commit=False)
             form.save()
-            return redirect(_item.get_absolute_url())
+            if _item is None:
+                message_create("Item created", item, item.location.owner)
+                if item.type != Issue.type:
+                    message_about_task("Associated tasks create", item)
+            return redirect(item.get_absolute_url())
         else:
             args['form'] = form
 
@@ -139,7 +207,7 @@ def item_create_update(req, type='', item=''):
 
 @user_passes_test(lambda user: user.is_staff, login_url=reverse_lazy('tracker:general'), redirect_field_name='')
 def delete_item(req, type='', item=''):
-    if type == 'issue':
+    if type == 'critical-question':
         Item = Issue
     elif type == 'task':
         Item = Task

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {% if messages %}
+                <table class="table table-responsive table-bordered">
+                    <tbody>
+                        {% for message in messages %}
+                            <tr {% if not message.read %}class="info"{% endif %}>
+                                <td>{{ forloop.counter }}</td>
+                                <th>{{ message.when }}</th>
+                                {% if message.type_item == message.ISSUE %}
+                                    <td><a href="{{ message.item_issue.get_absolute_url }}">{{ message.item_issue.title }}</a></td>
+                                {% else %}
+                                    <td><a href="{{ message.item_task.get_absolute_url }}">{{ message.item_task.title }}</a></td>
+                                {% endif %}
+                                <td><a class="text-center" href="{% url "notify:message" message.pk %}">Description</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <h4 class="text-center">Message box is empty</h4>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

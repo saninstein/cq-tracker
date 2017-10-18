@@ -11,6 +11,8 @@
                  <th>Is Admin</th>
                  <th>Email</th>
                  <th>Role name</th>
+                 <th>Send emails</th>
+                 <th>User settings</th>
              </tr>
          </thead>
          <tbody>
@@ -21,6 +23,10 @@
                      <td>{% if item.is_staff %}<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% else %}<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>{% endif %}</td>
                      <td>{{ item.email }}</td>
                      <td>{{ item.first_name }}</td>
+                     {% if item.messageprofile %}
+                         <td>{% if item.messageprofile.allow_email_events %}<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% else %}<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>{% endif %}</td>
+                         <td><a href="{% url "notify:messageprofile" item.messageprofile.pk %}">update</a></td>
+                     {% endif %}
                  </tr>
             {% endfor %}
          </tbody>
